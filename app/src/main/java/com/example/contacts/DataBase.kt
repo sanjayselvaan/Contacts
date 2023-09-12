@@ -12,7 +12,7 @@ object DataBase {
             Address("D-homeAddress"),
             Address("E-homeAddress"))//,Address("-homeAddress"),Address("G-homeAddress"),Address("H-homeAddress"),Address("I-homeAddress"),Address("J-homeAddress"),Address("K-homeAddress"),Address("L-homeAddress"),Address("M-homeAddress"),Address("N-homeAddress"),Address("O-homeAddress"),Address("P-homeAddress"),Address("Q-homeAddress"),Address("R-homeAddress"),Address("S-homeAddress"),Address("T-homeAddress"),Address("U-homeAddress"),Address("V-homeAddress"),Address("W-homeAddress"),Address("X-homeAddress"),Address("Y-homeAddress"),Address("Z-homeAddress"))
         for (i in name.indices){
-            contactsList.add(i,Contact(name[i],
+            contactsList.add(i,Contact(i,name[i],
                 (phoneNumber[i]), emailAddress[i],
                 address[i]))
         }

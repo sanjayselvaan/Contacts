@@ -14,19 +14,20 @@ class AddContact : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar?.title = "Add Contact"
+        supportActionBar?.title = getString(R.string.add_contact)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         backPressed = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finish()
             }
         }
-        val intent = Intent(this, MainActivity::class.java)
         binding.saveButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
             val name = binding.nameEditText.text
             val phoneNumber = binding.phoneNumberEditText.text
             val email = binding.emailEditText.text
             val address = binding.addressEditText.text
+            val newId=DataBase.getContactListSize()
             val newContactName = when {
                 !name.isNullOrEmpty() -> {
                     name.toString()
@@ -50,7 +51,7 @@ class AddContact : AppCompatActivity() {
             when {
                 newContactPhoneNumber.isNullOrEmpty() && newContactEmail.isNullOrEmpty() && newContactAddress.isNullOrEmpty() -> {
                     DataBase.addContact(
-                        Contact(
+                        Contact(newId,
                             Name(newContactName),
                             null,
                             null,
@@ -63,7 +64,7 @@ class AddContact : AppCompatActivity() {
 
                 newContactPhoneNumber.isNullOrEmpty() && newContactEmail.isNullOrEmpty() && newContactAddress != null -> {
                     DataBase.addContact(
-                        Contact(
+                        Contact(newId,
                             Name(newContactName),
                             null,
                             null,
@@ -76,7 +77,7 @@ class AddContact : AppCompatActivity() {
 
                 newContactPhoneNumber.isNullOrEmpty() && newContactEmail != null && newContactAddress.isNullOrEmpty() -> {
                     DataBase.addContact(
-                        Contact(
+                        Contact(newId,
                             Name(newContactName),
                             null,
                             Email(newContactEmail),
@@ -89,7 +90,7 @@ class AddContact : AppCompatActivity() {
 
                 newContactPhoneNumber.isNullOrEmpty() && newContactEmail != null && newContactAddress != null -> {
                     DataBase.addContact(
-                        Contact(
+                        Contact(newId,
                             Name(newContactName),
                             null,
                             Email(newContactEmail),
@@ -102,7 +103,7 @@ class AddContact : AppCompatActivity() {
 
                 newContactPhoneNumber != null && newContactEmail.isNullOrEmpty() && newContactAddress.isNullOrEmpty() -> {
                     DataBase.addContact(
-                        Contact(
+                        Contact(newId,
                             Name(newContactName),
                             PhoneNumber(newContactPhoneNumber),
                             null,
@@ -115,7 +116,7 @@ class AddContact : AppCompatActivity() {
 
                 newContactPhoneNumber != null && newContactEmail.isNullOrEmpty() && newContactAddress != null -> {
                     DataBase.addContact(
-                        Contact(
+                        Contact(newId,
                             Name(newContactName),
                             null,
                             null,
@@ -128,7 +129,7 @@ class AddContact : AppCompatActivity() {
 
                 newContactPhoneNumber != null && newContactEmail != null && newContactAddress.isNullOrEmpty() -> {
                     DataBase.addContact(
-                        Contact(
+                        Contact(newId,
                             Name(newContactName),
                             PhoneNumber(newContactPhoneNumber),
                             Email(newContactEmail),
@@ -141,7 +142,7 @@ class AddContact : AppCompatActivity() {
 
                 newContactPhoneNumber != null && newContactEmail != null && newContactAddress != null -> {
                     DataBase.addContact(
-                        Contact(
+                        Contact(newId,
                             Name(newContactName),
                             PhoneNumber(newContactPhoneNumber),
                             Email(newContactEmail),
@@ -154,7 +155,6 @@ class AddContact : AppCompatActivity() {
             }
         }
         binding.cancelButton.setOnClickListener {
-            setResult(RESULT_CANCELED, intent)
             finish()
         }
     }

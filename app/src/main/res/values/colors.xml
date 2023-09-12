@@ -4,8 +4,13 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#D3D2D2</color>
     <color name="primaryColor">#3E51BB</color>
-    <color name="contactImageBackgroundColor">#D95162C8</color>
+    <color name="contactImageBackgroundColor">#BF667EFB</color>
     <color name="fabColor">#A6B2F8</color>
     <color name="buttonColor">#85C8FC</color>
     <color name="backGroundColor">#FFFFFFFF</color>
+    <color name="iconColor">#BF667EFB</color>
+    <color name="recyclerItemColor">#FFFFFFFF</color>
+    <color name="textColor">#FF000000</color>
+    <color name="textHintColor">#9E9E9E</color>
+    <color name="hintColorForTextInputLayout">#BF667EFB</color>
 </resources>

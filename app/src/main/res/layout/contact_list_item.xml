@@ -6,7 +6,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:backgroundTint="@color/recyclerItemColor"
         android:id="@+id/cardView">
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -19,7 +19,8 @@
                 android:scaleType="centerCrop"
                 android:background="@drawable/circle_contact_image"
                 android:padding="5dp"
-                android:id="@+id/contactImage"/>
+                android:id="@+id/contactImage"
+                android:contentDescription="@null"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -27,8 +28,8 @@
                 android:textSize="26sp"
                 android:layout_toEndOf="@+id/contactImage"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/black"/>
+                android:layout_centerInParent="true"
+                android:textColor="@color/textColor"/>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
     <View

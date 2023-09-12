@@ -6,11 +6,11 @@
     <string name="phone_icon">phone icon</string>
     <string name="email_icon">email icon</string>
     <string name="address_icon">address icon</string>
-    <string name="add_contact">add contact</string>
+    <string name="add_contact">Add Contact</string>
     <string name="name">Name</string>
     <string name="phone_number">Phone Number</string>
     <string name="email">Email</string>
     <string name="address">Address</string>
-    <string name="save">SAVE</string>
-    <string name="cancel">CANCEL</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>

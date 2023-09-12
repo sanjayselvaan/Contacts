@@ -1,14 +1,14 @@
 package com.example.contacts
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.contacts.databinding.ContactListItemBinding
 
 
 class ContactsListRecyclerViewAdapter(private val itemClick:RecyclerItemClickListener):RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private lateinit var dataList:List<Contact>
+    private val dataList=mutableListOf<Contact>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding=ContactListItemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
         return ContactItemViewHolder(binding)
@@ -31,7 +31,12 @@ class ContactsListRecyclerViewAdapter(private val itemClick:RecyclerItemClickLis
            binding.contactName.text=dataItem.contactName.name
        }
     }
-    fun setDataList(dataList: List<Contact>){
-        this.dataList=dataList
+    fun setDataList(newDataList: List<Contact>){
+        val diffUtilCallBack=RecyclerViewDiffUtil(this.dataList,newDataList)
+        val diffUtilResult=DiffUtil.calculateDiff(diffUtilCallBack)
+        dataList.clear()
+        dataList.addAll(newDataList)
+        diffUtilResult.dispatchUpdatesTo(this)
     }
+
 }

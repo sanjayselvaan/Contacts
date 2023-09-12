@@ -7,7 +7,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import com.example.contacts.databinding.ActivityContactDetailsBinding
 
-class ContactDetails : AppCompatActivity() {
+class ShowContactDetails : AppCompatActivity() {
     private lateinit var binding: ActivityContactDetailsBinding
     private lateinit var backPressed: OnBackPressedCallback
     override fun onCreate(savedInstanceState: Bundle?) {

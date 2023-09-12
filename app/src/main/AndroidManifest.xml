@@ -16,7 +16,7 @@
             android:name=".AddContact"
             android:exported="false" />
         <activity
-            android:name=".ContactDetails"
+            android:name=".ShowContactDetails"
             android:exported="false"/>
         <activity
             android:name=".MainActivity"

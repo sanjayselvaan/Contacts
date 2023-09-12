@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:weightSum="12">
+        android:weightSum="12"
+        style="?android:borderlessButtonStyle">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -21,82 +22,58 @@
             android:layout_weight="1"
             android:hint="@string/name"
             android:padding="16dp"
-            app:hintTextColor="@color/primaryColor"
-            android:textColorHint="@color/primaryColor"
             app:startIconDrawable="@drawable/baseline_person_40"
-            app:startIconTint="@color/primaryColor">
+            app:startIconTint="@color/iconColor"
+            app:hintTextColor="@color/hintColorForTextInputLayout"
+            android:textColorHint="@color/textHintColor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/nameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="@color/textColor"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/nameEditText"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_toEndOf="@+id/nameIcon"-->
-        <!--            android:autofillHints="null"-->
-        <!--            android:hint="@string/name"-->
-        <!--            android:inputType="text"-->
-        <!--            android:textSize="26sp" />-->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/phone_number"
             android:padding="16dp"
-            app:hintTextColor="@color/primaryColor"
-            android:textColorHint="@color/primaryColor"
             app:startIconDrawable="@drawable/baseline_phone_50"
-            app:startIconTint="@color/primaryColor">
+            app:startIconTint="@color/iconColor"
+            app:hintTextColor="@color/hintColorForTextInputLayout"
+            android:textColorHint="@color/textHintColor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/phoneNumberEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="phone"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="@color/textColor"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/phoneIcon"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:contentDescription="@string/phone_icon"-->
-        <!--            android:padding="10dp"-->
-        <!--            android:src="@drawable/baseline_phone_50" />-->
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/phoneNumberEditText"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_toEndOf="@+id/phoneIcon"-->
-        <!--            android:autofillHints="@null"-->
-        <!--            android:hint="@string/phone_number"-->
-        <!--            android:inputType="phone"-->
-        <!--            android:textSize="26sp" />-->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/email"
             android:padding="16dp"
-            app:hintTextColor="@color/primaryColor"
-            android:textColorHint="@color/primaryColor"
             app:startIconDrawable="@drawable/baseline_email_50"
-            app:startIconTint="@color/primaryColor">
+            app:startIconTint="@color/iconColor"
+            app:hintTextColor="@color/hintColorForTextInputLayout"
+            android:textColorHint="@color/textHintColor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/emailEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="@color/textColor"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -105,80 +82,47 @@
             android:layout_weight="1"
             android:hint="@string/address"
             android:padding="16dp"
-            app:hintTextColor="@color/primaryColor"
-            android:textColorHint="@color/primaryColor"
             app:startIconDrawable="@drawable/baseline_location_on_50"
-            app:startIconTint="@color/primaryColor">
+            app:startIconTint="@color/iconColor"
+            app:hintTextColor="@color/hintColorForTextInputLayout"
+            android:textColorHint="@color/textHintColor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addressEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="@color/textColor"/>
         </com.google.android.material.textfield.TextInputLayout>
-
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/mailIcon"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:contentDescription="@string/email_icon"-->
-        <!--            android:padding="10dp"-->
-        <!--            android:src="@drawable/baseline_email_50" />-->
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/emailEditText"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_toEndOf="@+id/mailIcon"-->
-        <!--            android:hint="@string/email"-->
-        <!--            android:inputType="textEmailAddress"-->
-        <!--            android:textSize="26sp"-->
-        <!--            android:autofillHints="@null"/>-->
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/addressIcon"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:contentDescription="@string/address_icon"-->
-        <!--            android:padding="10dp"-->
-        <!--            android:src="@drawable/baseline_location_on_50" />-->
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/addressEditText"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_toEndOf="@+id/addressIcon"-->
-        <!--            android:hint="@string/address"-->
-        <!--            android:inputType="textPostalAddress"-->
-        <!--            android:textSize="26sp"-->
-        <!--            android:autofillHints="@null"/>-->
-
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:gravity="center"
+            android:layout_weight="3"
+            android:gravity="bottom|center"
             android:paddingBottom="16dp">
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
+                android:layout_marginEnd="50dp"
                 android:background="@color/fabColor"
                 android:text="@string/save"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/textColor"
+                style="?android:borderlessButtonStyle"/>
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/cancelButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/fabColor"
                 android:text="@string/cancel"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/textColor"
+                style="?android:borderlessButtonStyle"/>
         </LinearLayout>
 
     </LinearLayout>
