@@ -1,0 +1,37 @@
+package com.example.contacts
+
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.example.contacts.databinding.ContactListItemBinding
+
+
+class ContactsListRecyclerViewAdapter(private val itemClick:RecyclerItemClickListener):RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private lateinit var dataList:List<Contact>
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val binding=ContactListItemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return ContactItemViewHolder(binding)
+    }
+
+    override fun getItemCount(): Int {
+        return dataList.size
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val dataItem=dataList[position]
+        (holder as ContactItemViewHolder).bind(dataItem)
+        holder.itemView.setOnClickListener {
+            itemClick.itemOnClick(position)
+        }
+
+    }
+    inner class ContactItemViewHolder(private val binding: ContactListItemBinding):RecyclerView.ViewHolder(binding.root){
+       fun bind(dataItem:Contact){
+           binding.contactName.text=dataItem.contactName.name
+       }
+    }
+    fun setDataList(dataList: List<Contact>){
+        this.dataList=dataList
+    }
+}
