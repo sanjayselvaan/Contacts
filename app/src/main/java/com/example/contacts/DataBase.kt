@@ -2,7 +2,24 @@ package com.example.contacts
 
 object DataBase {
     private var contactsList = mutableListOf<Contact>()
-    fun populateDataInContactList() {
+    fun getContactsList(): List<Contact> = contactsList.sortedBy {
+        it.contactName.name.lowercase()
+    }
+
+    fun getContactName(position: Int): Name = contactsList[position].contactName
+
+    fun getContactNumber(position: Int): PhoneNumber? = contactsList[position].contactPhoneNumber
+
+    fun getContactEmail(position: Int): Email? = contactsList[position].contactEmail
+
+    fun getContactListSize(): Int = contactsList.size
+
+    fun getContactAddress(position: Int): Address? = contactsList[position].contactAddress
+
+    fun addContact(contact: Contact) {
+        contactsList.add(contact)
+    }
+    init {
         val name = mutableListOf(
             Name("Aaaaa"),
             Name("Bbbbbb"),
@@ -40,24 +57,6 @@ object DataBase {
                 )
             )
         }
-    }
-
-    fun getContactsList(): List<Contact> = contactsList.sortedBy {
-        it.contactName.name.lowercase()
-    }
-
-    fun getContactName(position: Int): Name = contactsList[position].contactName
-
-    fun getContactNumber(position: Int): PhoneNumber? = contactsList[position].contactPhoneNumber
-
-    fun getContactEmail(position: Int): Email? = contactsList[position].contactEmail
-
-    fun getContactListSize(): Int = contactsList.size
-
-    fun getContactAddress(position: Int): Address? = contactsList[position].contactAddress
-
-    fun addContact(contact: Contact) {
-        contactsList.add(contact)
     }
 
 }

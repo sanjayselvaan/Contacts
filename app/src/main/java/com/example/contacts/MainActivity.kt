@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if (savedInstanceState==null){
-            DataBase.populateDataInContactList()
             supportFragmentManager.beginTransaction().add(R.id.fragmentContainer,ContactListFragment(),
                 contactListFragmentTag).commit()
         }
