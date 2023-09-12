@@ -24,11 +24,14 @@ class ContactListFragment : Fragment(),RecyclerItemClickListener {
 
     override fun itemOnClick(position: Int) {
         val intent= Intent(requireActivity(),ShowContactDetails::class.java)
-        intent.putExtra("position",position)
+        intent.putExtra(positionOfDataItem,position)
         startActivity(intent)
     }
     fun notifyRecyclerAdapterForNewContact(){
         (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(DataBase.getContactsList())
+    }
+    companion object{
+        const val positionOfDataItem="position_of_data_item"
     }
 
 }

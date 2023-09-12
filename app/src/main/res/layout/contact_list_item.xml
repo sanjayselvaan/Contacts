@@ -29,7 +29,9 @@
                 android:layout_toEndOf="@+id/contactImage"
                 android:layout_marginStart="8dp"
                 android:layout_centerInParent="true"
-                android:textColor="@color/textColor"/>
+                android:textColor="@color/textColor"
+                android:maxLines="1"
+                android:ellipsize="end"/>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
     <View

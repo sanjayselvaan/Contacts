@@ -22,7 +22,7 @@ class ContactsListRecyclerViewAdapter(private val itemClick:RecyclerItemClickLis
         val dataItem=dataList[position]
         (holder as ContactItemViewHolder).bind(dataItem)
         holder.itemView.setOnClickListener {
-            itemClick.itemOnClick(position)
+            itemClick.itemOnClick(dataItem.contactID)
         }
 
     }

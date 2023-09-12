@@ -13,4 +13,6 @@
     <string name="address">Address</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="unknown_name">Unknown Name</string>
+    <string name="contact_details">Contact Details</string>
 </resources>

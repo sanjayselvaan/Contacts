@@ -22,18 +22,21 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState==null){
             DataBase.populateDataInContactList()
-            supportFragmentManager.beginTransaction().add(R.id.fragmentContainer,ContactListFragment(),"tag").commit()
+            supportFragmentManager.beginTransaction().add(R.id.fragmentContainer,ContactListFragment(),
+                contactListFragmentTag).commit()
         }
         binding.fab.setOnClickListener {
             val intent= Intent(this,AddContact::class.java)
             fetchResultFromAddContactActivity.launch(intent)
         }
-        binding.fab
     }
     private fun notifyRecyclerAdapter(){
-        val fragment=supportFragmentManager.findFragmentByTag("tag")
+        val fragment=supportFragmentManager.findFragmentByTag(contactListFragmentTag)
         if (fragment!=null){
             (fragment as ContactListFragment).notifyRecyclerAdapterForNewContact()
         }
+    }
+    companion object{
+        const val contactListFragmentTag="fragment_tag"
     }
 }

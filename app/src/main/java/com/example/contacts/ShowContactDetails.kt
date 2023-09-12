@@ -12,11 +12,11 @@ class ShowContactDetails : AppCompatActivity() {
     private lateinit var backPressed: OnBackPressedCallback
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.title = "Contact Details"
+        supportActionBar?.title = getString(R.string.contact_details)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding = ActivityContactDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val position = intent.getIntExtra("position", 0)
+        val position = intent.getIntExtra(ContactListFragment.positionOfDataItem, 0)
         val contactName = DataBase.getContactName(position)
         val contactNumber = DataBase.getContactNumber(position)
         val contactEmail = DataBase.getContactEmail(position)
