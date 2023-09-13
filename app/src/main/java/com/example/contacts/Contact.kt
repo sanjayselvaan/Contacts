@@ -1,4 +1,4 @@
 package com.example.contacts
 
 
-data class Contact(val contactID:Int,var contactName:Name,var contactPhoneNumber:PhoneNumber?,var contactEmail:Email?,var contactAddress:Address?)
+data class Contact(val contactID:Int,val contactName:Name,val contactPhoneNumber:PhoneNumber?,val contactEmail:Email?,val contactAddress:Address?)

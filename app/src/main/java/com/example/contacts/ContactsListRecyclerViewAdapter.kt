@@ -30,7 +30,6 @@ class ContactsListRecyclerViewAdapter(private val itemClick:RecyclerItemClickLis
        fun bind(dataItem:Contact){
            binding.contactName.text=dataItem.contactName.name
        }
-
     }
     fun setDataList(newDataList: List<Contact>){
         val diffUtilCallBack=RecyclerViewDiffUtil(this.dataList,newDataList)

@@ -1,3 +1,3 @@
 package com.example.contacts
 
-data class Email(var email: String)
+data class Email(val email: String)
