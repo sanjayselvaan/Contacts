@@ -12,7 +12,7 @@ class ShowContactDetails : AppCompatActivity() {
     private lateinit var backPressed: OnBackPressedCallback
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.title = getString(R.string.contact_details)
+         supportActionBar?.title = getString(R.string.contact_details)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding = ActivityContactDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
