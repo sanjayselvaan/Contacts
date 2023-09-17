@@ -7,12 +7,17 @@
     <string name="email_icon">email icon</string>
     <string name="address_icon">address icon</string>
     <string name="add_contact">Add Contact</string>
+    <string name="add_phone_number">Add Phone Number</string>
+    <string name="add_email">Add Email</string>
+    <string name="add_address">Add Address</string>
     <string name="name">Name</string>
-    <string name="phone_number">Phone Number</string>
+    <string name="phone">Phone</string>
     <string name="email">Email</string>
     <string name="address">Address</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="unknown_name">Unknown Name</string>
     <string name="contact_details">Contact Details</string>
+    <string name="your_changes_have_not_been_saved_warning">Your changes have not been saved</string>
+    <string name="discard">Discard</string>
 </resources>

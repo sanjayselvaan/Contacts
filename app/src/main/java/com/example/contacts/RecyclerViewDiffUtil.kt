@@ -21,10 +21,10 @@ class RecyclerViewDiffUtil(private val oldItems: List<Contact>,
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return when {
-            oldItems[oldItemPosition].contactName.name != newItems[newItemPosition].contactName.name -> false
-            oldItems[oldItemPosition].contactPhoneNumber?.phoneNumber != newItems[newItemPosition].contactPhoneNumber?.phoneNumber -> false
-            oldItems[oldItemPosition].contactEmail?.email != newItems[newItemPosition].contactEmail?.email -> false
-            oldItems[oldItemPosition].contactAddress?.address != newItems[newItemPosition].contactAddress?.address -> false
+            oldItems[oldItemPosition].contactName != newItems[newItemPosition].contactName -> false
+            oldItems[oldItemPosition].contactPhoneNumber != newItems[newItemPosition].contactPhoneNumber -> false
+            oldItems[oldItemPosition].contactEmail != newItems[newItemPosition].contactEmail -> false
+            oldItems[oldItemPosition].contactAddress != newItems[newItemPosition].contactAddress -> false
             else -> true
         }
     }

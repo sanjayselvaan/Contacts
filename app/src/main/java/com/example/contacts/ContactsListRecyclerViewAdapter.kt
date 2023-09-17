@@ -1,5 +1,6 @@
 package com.example.contacts
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -28,10 +29,12 @@ class ContactsListRecyclerViewAdapter(private val itemClick:RecyclerItemClickLis
     }
     inner class ContactItemViewHolder(private val binding: ContactListItemBinding):RecyclerView.ViewHolder(binding.root){
        fun bind(dataItem:Contact){
-           binding.contactName.text=dataItem.contactName.name
+           binding.contactName.text=dataItem.contactName
        }
     }
     fun setDataList(newDataList: List<Contact>){
+        Log.d("test1","dataList"+dataList.toString())
+        Log.d("test1","newList"+newDataList.toString())
         val diffUtilCallBack=RecyclerViewDiffUtil(this.dataList,newDataList)
         val diffUtilResult=DiffUtil.calculateDiff(diffUtilCallBack)
         dataList.clear()

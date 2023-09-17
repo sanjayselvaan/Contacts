@@ -21,23 +21,23 @@ class ShowContactDetails : AppCompatActivity() {
         val contactNumber = DataBase.getContactNumber(position)
         val contactEmail = DataBase.getContactEmail(position)
         val contactAddress = DataBase.getContactAddress(position)
-        binding.nameTextView.text = contactName.name
+        binding.nameTextView.text = contactName
         contactNumber?.let {
-            if (it.phoneNumber.isNotEmpty()) {
+            if (it.isNotEmpty()) {
                 binding.phoneNumberLayout.visibility = View.VISIBLE
-                binding.phoneNumberTextView.text = it.phoneNumber
+                binding.phoneNumberTextView.text = it
             }
         }
         contactEmail?.let {
-            if (it.email.isNotEmpty()) {
+            if (it.isNotEmpty()) {
                 binding.emailLayout.visibility = View.VISIBLE
-                binding.emailTextView.text = it.email
+                binding.emailTextView.text = it
             }
         }
         contactAddress?.let {
-            if (it.address.isNotEmpty()) {
+            if (it.isNotEmpty()) {
                 binding.addressLayout.visibility = View.VISIBLE
-                binding.addressTextView.text = it.address
+                binding.addressTextView.text = it
             }
         }
         backPressed = object : OnBackPressedCallback(true) {
