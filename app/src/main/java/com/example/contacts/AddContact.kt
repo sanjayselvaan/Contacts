@@ -1,14 +1,13 @@
 package com.example.contacts
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.util.Patterns
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -35,7 +34,7 @@ class AddContact : AppCompatActivity() {
         if (savedInstanceState == null) {
             binding.nameTextInputEditText.requestFocus()
         }
-        loadFirstButtons()
+        setUpFirstButtons()
         val alertDialog = AlertDialog.Builder(this)
         backPressed = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -61,7 +60,6 @@ class AddContact : AppCompatActivity() {
             }
         }
         onBackPressedDispatcher.addCallback(backPressed)
-
         binding.addPhoneNumberButton.setOnClickListener {
             val extraPhoneView = layoutInflater.inflate(
                 R.layout.extra_phone_number,
@@ -85,8 +83,10 @@ class AddContact : AppCompatActivity() {
             }
             val childCount = binding.phoneNumberLinearLayout.childCount
             binding.phoneNumberLinearLayout.addView(extraPhoneView, childCount - 1)
-            extraPhoneView.requestFocus()
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+            phoneNumberTextInputEditText.requestFocus()
+            val inputMethodManager=getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.showSoftInput(phoneNumberTextInputEditText,InputMethodManager.SHOW_IMPLICIT)
+
         }
 
         binding.addEmailButton.setOnClickListener {
@@ -110,8 +110,11 @@ class AddContact : AppCompatActivity() {
             }
             val childCount = binding.emailLinearLayout.childCount
             binding.emailLinearLayout.addView(extraEmailView, childCount - 1)
-            extraEmailView.requestFocus()
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+            emailTextInputEditText.requestFocus()
+            val inputMethodManager=getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.showSoftInput(emailTextInputEditText,InputMethodManager.SHOW_IMPLICIT)
+
+
         }
 
         binding.addAddressButton.setOnClickListener {
@@ -123,8 +126,10 @@ class AddContact : AppCompatActivity() {
                 binding.addressLinearLayout.removeView(extraAddressView)
             }
             binding.addressLinearLayout.addView(extraAddressView, childCount - 1)
-            extraAddressView.requestFocus()
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+            val addressTextInputEditText=extraAddressView.findViewById<TextInputEditText>(R.id.addressTextInputEditText)
+            addressTextInputEditText.requestFocus()
+            val inputMethodManager=getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.showSoftInput(addressTextInputEditText,InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
@@ -140,6 +145,7 @@ class AddContact : AppCompatActivity() {
         var emailList: MutableList<String>?
         var addressList: MutableList<String>?
         val newId = DataBase.getContactListSize()
+        val alertDialog=AlertDialog.Builder(this)
         if (checkForPhoneNumberValidation(
                 binding.phoneNumberLinearLayout.id,
                 R.id.phoneNumberTextInputEditText
@@ -157,9 +163,6 @@ class AddContact : AppCompatActivity() {
                 binding.addressLinearLayout.id,
                 R.id.addressTextInputEditText
             )
-            Log.d("test1","phoneList="+phoneNumberList.toString())
-            Log.d("test1","emailList="+emailList.toString())
-            Log.d("test1","addressList="+addressList.toString())
 
             val newContactName = when {
                 name.isNotBlank() && name.isNotEmpty() -> {
@@ -183,7 +186,7 @@ class AddContact : AppCompatActivity() {
             if (addressList.isEmpty()) {
                 addressList = null
             }
-            if (!newContactName.isNullOrBlank() || !phoneNumberList.isNullOrEmpty() || !emailList.isNullOrEmpty() || !addressList.isNullOrEmpty()) {
+            if (!newContactName.isNullOrEmpty()||!newContactName.isNullOrBlank() || !phoneNumberList.isNullOrEmpty() || !emailList.isNullOrEmpty() || !addressList.isNullOrEmpty()) {
                 DataBase.addContact(
                     Contact(
                         newId,
@@ -217,11 +220,19 @@ class AddContact : AppCompatActivity() {
                         .show()
                 }
                 val intentForShowDetails = Intent(this, ShowContactDetails::class.java)
-                intentForShowDetails.putExtra(ContactListFragment.positionOfDataItem, newId)
+                intentForShowDetails.putExtra(MainActivity.positionOfDataItem, newId)
                 startActivity(intentForShowDetails)
                 finish()
             } else {
-                finish()
+                alertDialog.setMessage(getString(R.string.nothing_to_save))
+                alertDialog.setPositiveButton(getString(R.string.ok)) { _, _ ->
+                    finish()
+                }
+                alertDialog.setNegativeButton(getString(R.string.cancel)){dialog,_->
+                    dialog.dismiss()
+
+                }
+                alertDialog.show()
             }
         } else {
             Toast.makeText(this, getString(R.string.enter_valid_inputs), Toast.LENGTH_SHORT)
@@ -241,48 +252,6 @@ class AddContact : AppCompatActivity() {
         collectAndStoreTextFromTextInputEditText(
             binding.addressLinearLayout.id, R.id.addressTextInputEditText
         )
-        val currentViewId=currentFocus?.id
-        currentViewId?.let {
-            var viewFound=false
-            if (it==binding.nameTextInputEditText.id){
-                outState.putInt("nameTextInputEditText",binding.nameTextInputEditText.id)
-            }
-            else{
-                for (i in 0 until binding.phoneNumberLinearLayout.childCount-1){
-                    val view=binding.phoneNumberLinearLayout.getChildAt(i)
-                    val textInputEditTextId=view.findViewById<TextInputEditText>(R.id.phoneNumberTextInputEditText).id
-                    if (it==textInputEditTextId){
-                        viewFound=true
-                        outState.putInt("phoneNumberLinearLayout",i)
-                        break
-                    }
-                }
-                if (!viewFound) {
-                    for (i in 0 until binding.emailLinearLayout.childCount-1) {
-                        val view = binding.emailLinearLayout.getChildAt(i)
-                        val textInputEditTextId=view.findViewById<TextInputEditText>(R.id.emailTextInputEditText).id
-                        if (textInputEditTextId == it) {
-                            viewFound=true
-                            outState.putInt("emailLinearLayout", i)
-                            break
-                        }
-                    }
-                    if (!viewFound) {
-                        for (i in 0 until binding.addressLinearLayout.childCount-1) {
-                            val view = binding.addressLinearLayout.getChildAt(i)
-                            val textInputEditTextId=view.findViewById<TextInputEditText>(R.id.addressTextInputEditText).id
-                            if (textInputEditTextId== it) {
-                                outState.putInt("addressLinearLayout", i)
-                                break
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -377,40 +346,24 @@ class AddContact : AppCompatActivity() {
             )
             addContactsViewModel.removeAllItemsInAddressDataList()
         }
-        savedInstanceState.getInt("nameTextInputEditText").let {
-            binding.nameTextInputEditText.requestFocus()
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+       addContactsViewModel.getFocus()?.let {
+           when(it.first){
+               R.id.phoneNumberLinearLayout->{
+                   binding.phoneNumberLinearLayout.getChildAt(it.second).requestFocus()
+               }
+               R.id.emailLinearLayout->{
+                   binding.emailLinearLayout.getChildAt(it.second).requestFocus()
+               }
+               R.id.addressLinearLayout->{
+                   binding.addressLinearLayout.getChildAt(it.second).requestFocus()
+               }
+
+               else -> {
+                       binding.nameTextInputEditText.requestFocus()
+                   }
+               }
         }
-        savedInstanceState.getInt("phoneNumberLinearLayout").let { position ->
-            for (i in 0 until binding.phoneNumberLinearLayout.childCount-1){
-                if (i==position){
-                    val view=binding.phoneNumberLinearLayout.getChildAt(i)
-                    val textInputEditText=view.findViewById<TextInputEditText>(R.id.phoneNumberTextInputEditText)
-                    textInputEditText.requestFocus()
-                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-                }
-            }
-        }
-        savedInstanceState.getInt("emailLinearLayout").let { position ->
-            for (i in 0 until binding.emailLinearLayout.childCount-1){
-                if (i==position){
-                    val view=binding.emailLinearLayout.getChildAt(i)
-                    val textInputEditText=view.findViewById<TextInputEditText>(R.id.emailTextInputEditText)
-                    textInputEditText.requestFocus()
-                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-                }
-            }
-        }
-        savedInstanceState.getInt("addressLinearLayout").let { position ->
-            for (i in 0 until binding.addressLinearLayout.childCount-1){
-                if (i==position){
-                    val view=binding.addressLinearLayout.getChildAt(i)
-                    val textInputEditText=view.findViewById<TextInputEditText>(R.id.addressTextInputEditText)
-                    textInputEditText.requestFocus()
-                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-                }
-            }
-        }
+        addContactsViewModel.clearFocus()
     }
 
 
@@ -449,9 +402,12 @@ class AddContact : AppCompatActivity() {
         linearLayoutId: Int, editTextId: Int
     ) {
         val layout = findViewById<LinearLayout>(linearLayoutId)
-        for (i in 0 until layout.childCount) {
+        for (i in 0 until layout.childCount-1) {
             val view = layout.getChildAt(i)
             val editText = view.findViewById<TextInputEditText>(editTextId)
+            if (editText.hasFocus()){
+                addContactsViewModel.setFocus(Pair(linearLayoutId,i))
+            }
             if (editText != null) {
                 when (linearLayoutId) {
                     binding.phoneNumberLinearLayout.id -> {
@@ -468,7 +424,7 @@ class AddContact : AppCompatActivity() {
         }
     }
 
-    private fun loadFirstButtons() {
+    private fun setUpFirstButtons() {
         val extraPhoneView = layoutInflater.inflate(
             R.layout.extra_phone_number,
             binding.phoneNumberLinearLayout,
@@ -570,9 +526,9 @@ class AddContact : AppCompatActivity() {
     }
 
     private fun validateForEmail(text: String): Boolean {
-//        val pattern=Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,4}\"")
+        val pattern=Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,4}\"")
         if (text.isNotEmpty()) {
-            return Patterns.EMAIL_ADDRESS.matcher(text).matches()
+            return pattern.matches(text)
         }
         return true
     }

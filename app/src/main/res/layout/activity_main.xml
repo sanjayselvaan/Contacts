@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@color/backGroundColor">
+    android:background="@color/backGroundColor"
+    android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -22,6 +23,7 @@
         android:layout_marginBottom="24dp"
         android:backgroundTint="@color/fabColor"
         app:borderWidth="0dp"
+        android:layout_gravity="bottom|end"
         android:contentDescription="@string/add_contact"
         android:src="@drawable/baseline_add_24"
         app:shapeAppearanceOverlay="@style/fabStyle1" />

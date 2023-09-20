@@ -8,5 +8,5 @@
         android:layout_height="wrap_content"
         android:textSize="24sp"
         android:textColor="@color/textColor"
-        android:padding="16dp"/>
+        android:padding="8dp"/>
 </LinearLayout>

@@ -6,11 +6,12 @@
     <color name="primaryColor">#3E51BB</color>
     <color name="contactImageBackgroundColor">#D91B1C20</color>
     <color name="fabColor">#D9526BFF</color>
-    <color name="buttonColor">#85C8FC</color>
+    <color name="buttonColor">#3E51BB</color>
     <color name="backGroundColor">#3C3C3C</color>
     <color name="recyclerItemColor">#656565</color>
     <color name="textColor">#E6FFFFFF</color>
     <color name="iconColor">#BF667EFB</color>
     <color name="textHintColor">#BFFFFFFF</color>
     <color name="hintColorForTextInputLayout">#BF667EFB</color>
+    <color name="removeButtonBackGround">#FF000000</color>
 </resources>

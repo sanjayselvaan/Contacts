@@ -6,6 +6,7 @@ class AddContactsViewModel:ViewModel() {
     private var phoneNumberDataList= mutableListOf<String>()
     private var emailDataList= mutableListOf<String>()
     private var addressDataList= mutableListOf<String>()
+    private var focus:Pair<Int,Int>?=null
     fun addItemInPhoneNumberList(newText:String){
         phoneNumberDataList.add(newText)
     }
@@ -33,4 +34,14 @@ class AddContactsViewModel:ViewModel() {
     fun removeAllItemsInAddressDataList(){
         addressDataList.clear()
     }
+    fun setFocus(pairValue:Pair<Int,Int>){
+        focus=pairValue
+    }
+    fun getFocus(): Pair<Int, Int>? {
+        return focus
+    }
+    fun clearFocus(){
+        focus=null
+    }
+
 }

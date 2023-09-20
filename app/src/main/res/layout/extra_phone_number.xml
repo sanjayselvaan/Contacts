@@ -16,7 +16,8 @@
         android:layout_marginTop="16dp"
         android:layout_weight="9"
         app:errorEnabled="true"
-        app:errorTextColor="@color/red">
+        app:errorTextColor="@color/red"
+        android:textColorHint="@color/textHintColor">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phoneNumberTextInputEditText"
@@ -35,7 +36,7 @@
         android:id="@+id/removeButton"
         android:layout_weight="1"
         android:padding="8dp"
-        android:background="@color/white"
+        android:background="@color/removeButtonBackGround"
         android:contentDescription="@null"/>
 
 </LinearLayout>

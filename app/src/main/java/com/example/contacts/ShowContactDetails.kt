@@ -17,7 +17,7 @@ class ShowContactDetails : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding = ActivityContactDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val position = intent.getIntExtra(ContactListFragment.positionOfDataItem, 0)
+        val position = intent.getIntExtra(MainActivity.positionOfDataItem, 0)
         val contactName = DataBase.getContactName(position)
         val contactNumber = DataBase.getContactNumber(position)
         val contactEmail = DataBase.getContactEmail(position)
