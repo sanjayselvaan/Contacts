@@ -3,120 +3,125 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShowContactDetails"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    tools:context=".ShowContactDetails">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/backGroundColor"
         android:orientation="vertical">
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/baseline_person_300"
-        android:background="@color/contactImageBackgroundColor"
-        android:contentDescription="@string/profile_pic"
-        android:id="@+id/profilePic"/>
+
+        <ImageView
+            android:id="@+id/profilePic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/contactImageBackgroundColor"
+            android:contentDescription="@string/profile_pic"
+            android:src="@drawable/baseline_person_300" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <RelativeLayout
+
+            <LinearLayout
                 android:id="@+id/nameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
+                android:layout_margin="16dp"
                 android:background="@drawable/layout_border"
-                android:layout_margin="16dp">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/nameIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/phone_icon"
                     android:padding="16dp"
-                    android:src="@drawable/baseline_person_40"
-                    android:contentDescription="@string/phone_icon"/>
+                    android:src="@drawable/baseline_person_40" />
+
                 <TextView
                     android:id="@+id/nameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_toEndOf="@+id/nameIcon"
-                    android:textSize="24sp"
+                    android:padding="16dp"
                     android:textColor="@color/textColor"
-                    android:padding="16dp"/>
-            </RelativeLayout>
-            <RelativeLayout
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/phoneNumberLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
+                android:layout_margin="16dp"
                 android:background="@drawable/layout_border"
-                android:layout_margin="16dp">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/phoneIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/phone_icon"
                     android:padding="16dp"
-                    android:src="@drawable/baseline_phone_50"
-                    android:contentDescription="@string/phone_icon"/>
+                    android:src="@drawable/baseline_phone_50" />
+
                 <LinearLayout
+                    android:id="@+id/contactPhoneNumberLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/contactPhoneNumberLinearLayout"
-                    android:orientation="vertical"
-                    android:layout_toEndOf="@id/phoneIcon"/>
-            </RelativeLayout>
+                    android:orientation="vertical" />
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/emailLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
+                android:layout_margin="16dp"
                 android:background="@drawable/layout_border"
-                android:layout_margin="16dp">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/mailIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/email_icon"
                     android:padding="16dp"
-                    android:src="@drawable/baseline_email_50"
-                    android:contentDescription="@string/email_icon"/>
+                    android:src="@drawable/baseline_email_50" />
+
                 <LinearLayout
+                    android:id="@+id/contactEmailLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/contactEmailLinearLayout"
-                    android:orientation="vertical"
-                    android:layout_toEndOf="@id/mailIcon"/>
-            </RelativeLayout>
-            <RelativeLayout
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/addressLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
+                android:layout_margin="16dp"
                 android:background="@drawable/layout_border"
-                android:layout_margin="16dp">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/addressIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/address_icon"
                     android:padding="16dp"
-                    android:src="@drawable/baseline_location_on_50"
-                    android:contentDescription="@string/address_icon"/>
+                    android:src="@drawable/baseline_location_on_50" />
+
                 <LinearLayout
+                    android:id="@+id/contactAddressLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/contactAddressLinearLayout"
-                    android:orientation="vertical"
-                    android:layout_toEndOf="@id/addressIcon"/>
-            </RelativeLayout>
+                    android:orientation="vertical" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

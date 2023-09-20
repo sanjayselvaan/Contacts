@@ -3,10 +3,12 @@ package com.example.contacts
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -31,13 +33,13 @@ class AddContact : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         addContactsViewModel = ViewModelProvider(this)[AddContactsViewModel::class.java]
         if (savedInstanceState == null) {
-            binding.nameEditText.requestFocus()
+            binding.nameTextInputEditText.requestFocus()
         }
         loadFirstButtons()
         val alertDialog = AlertDialog.Builder(this)
         backPressed = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val name = binding.nameEditText.text
+                val name = binding.nameTextInputEditText.text
                 val phoneNumberList=collectAndReturnTextFromTextInputEditText(R.id.phoneNumberLinearLayout,R.id.phoneNumberTextInputEditText)
                 val emailList=collectAndReturnTextFromTextInputEditText(R.id.emailLinearLayout,R.id.emailTextInputEditText)
                 val addressList=collectAndReturnTextFromTextInputEditText(R.id.addressLinearLayout,R.id.addressTextInputEditText)
@@ -60,7 +62,7 @@ class AddContact : AppCompatActivity() {
         }
         onBackPressedDispatcher.addCallback(backPressed)
 
-        binding.addPhoneNumber.setOnClickListener {
+        binding.addPhoneNumberButton.setOnClickListener {
             val extraPhoneView = layoutInflater.inflate(
                 R.layout.extra_phone_number,
                 binding.phoneNumberLinearLayout,
@@ -84,8 +86,10 @@ class AddContact : AppCompatActivity() {
             val childCount = binding.phoneNumberLinearLayout.childCount
             binding.phoneNumberLinearLayout.addView(extraPhoneView, childCount - 1)
             extraPhoneView.requestFocus()
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
-        binding.addEmail.setOnClickListener {
+
+        binding.addEmailButton.setOnClickListener {
             val extraEmailView =
                 layoutInflater.inflate(R.layout.extra_email_view, binding.emailLinearLayout, false)
             val emailTextInputLayout =
@@ -100,15 +104,17 @@ class AddContact : AppCompatActivity() {
                 if (validateForEmail(text.toString())) {
                     emailTextInputLayout.error = null
                 } else {
-                    emailTextInputLayout.error = getString(R.string.please_enter_a_valid_phone_number)
+                    emailTextInputLayout.error = getString(R.string.please_enter_a_valid_email)
                 }
 
             }
             val childCount = binding.emailLinearLayout.childCount
             binding.emailLinearLayout.addView(extraEmailView, childCount - 1)
             extraEmailView.requestFocus()
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
-        binding.addAddress.setOnClickListener {
+
+        binding.addAddressButton.setOnClickListener {
             val extraAddressView =
                 layoutInflater.inflate(R.layout.extra_address, binding.addressLinearLayout, false)
             val childCount = binding.addressLinearLayout.childCount
@@ -118,6 +124,7 @@ class AddContact : AppCompatActivity() {
             }
             binding.addressLinearLayout.addView(extraAddressView, childCount - 1)
             extraAddressView.requestFocus()
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
     }
 
@@ -128,7 +135,7 @@ class AddContact : AppCompatActivity() {
 
     private fun saveButtonOnClickAction() {
         val intent = Intent(this, MainActivity::class.java)
-        val name = binding.nameEditText.text.toString()
+        val name = binding.nameTextInputEditText.text.toString()
         var phoneNumberList: MutableList<String>?
         var emailList: MutableList<String>?
         var addressList: MutableList<String>?
@@ -150,6 +157,9 @@ class AddContact : AppCompatActivity() {
                 binding.addressLinearLayout.id,
                 R.id.addressTextInputEditText
             )
+            Log.d("test1","phoneList="+phoneNumberList.toString())
+            Log.d("test1","emailList="+emailList.toString())
+            Log.d("test1","addressList="+addressList.toString())
 
             val newContactName = when {
                 name.isNotBlank() && name.isNotEmpty() -> {
@@ -231,21 +241,58 @@ class AddContact : AppCompatActivity() {
         collectAndStoreTextFromTextInputEditText(
             binding.addressLinearLayout.id, R.id.addressTextInputEditText
         )
+        val currentViewId=currentFocus?.id
+        currentViewId?.let {
+            var viewFound=false
+            if (it==binding.nameTextInputEditText.id){
+                outState.putInt("nameTextInputEditText",binding.nameTextInputEditText.id)
+            }
+            else{
+                for (i in 0 until binding.phoneNumberLinearLayout.childCount-1){
+                    val view=binding.phoneNumberLinearLayout.getChildAt(i)
+                    val textInputEditTextId=view.findViewById<TextInputEditText>(R.id.phoneNumberTextInputEditText).id
+                    if (it==textInputEditTextId){
+                        viewFound=true
+                        outState.putInt("phoneNumberLinearLayout",i)
+                        break
+                    }
+                }
+                if (!viewFound) {
+                    for (i in 0 until binding.emailLinearLayout.childCount-1) {
+                        val view = binding.emailLinearLayout.getChildAt(i)
+                        val textInputEditTextId=view.findViewById<TextInputEditText>(R.id.emailTextInputEditText).id
+                        if (textInputEditTextId == it) {
+                            viewFound=true
+                            outState.putInt("emailLinearLayout", i)
+                            break
+                        }
+                    }
+                    if (!viewFound) {
+                        for (i in 0 until binding.addressLinearLayout.childCount-1) {
+                            val view = binding.addressLinearLayout.getChildAt(i)
+                            val textInputEditTextId=view.findViewById<TextInputEditText>(R.id.addressTextInputEditText).id
+                            if (textInputEditTextId== it) {
+                                outState.putInt("addressLinearLayout", i)
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
 
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         addContactsViewModel.getPhoneNumberDataList().let {
-            for (i in 1 until it.size) {
+            for (i in 0 until it.size-1) {
                 val extraPhoneNumberView = layoutInflater.inflate(
                     R.layout.extra_phone_number,
                     binding.phoneNumberLinearLayout,
                     false
-                )
-                binding.phoneNumberLinearLayout.addView(
-                    extraPhoneNumberView,
-                    binding.phoneNumberLinearLayout.childCount - 1
                 )
                 val phoneNumberTextInputLayout =
                     extraPhoneNumberView.findViewById<TextInputLayout>(R.id.phoneNumberTextInputLayout)
@@ -262,25 +309,24 @@ class AddContact : AppCompatActivity() {
                         phoneNumberTextInputLayout.error = getString(R.string.please_enter_a_valid_phone_number)
                     }
                 }
+                binding.phoneNumberLinearLayout.addView(
+                    extraPhoneNumberView,
+                    binding.phoneNumberLinearLayout.childCount - 1
+                )
             }
-            setTextForEditText(
+            setTextForTextInputEditText(
                 binding.phoneNumberLinearLayout.id,
                 it, R.id.phoneNumberTextInputEditText
             )
             addContactsViewModel.removeAllItemsInPhoneNumberDataList()
-            addContactsViewModel.removeAllItemsInPhoneNumberValidityList()
         }
 
         addContactsViewModel.getEmailDataList().let {
-            for (i in 1 until it.size) {
+            for (i in 0 until it.size-1) {
                 val extraEmailView = layoutInflater.inflate(
                     R.layout.extra_email_view,
                     binding.emailLinearLayout,
                     false
-                )
-                binding.emailLinearLayout.addView(
-                    extraEmailView,
-                    binding.emailLinearLayout.childCount - 1
                 )
                 val emailTextInputLayout =
                     extraEmailView.findViewById<TextInputLayout>(R.id.emailTextInputLayout)
@@ -297,52 +343,84 @@ class AddContact : AppCompatActivity() {
                         emailTextInputLayout.error = getString(R.string.please_enter_a_valid_email)
                     }
                 }
+                binding.emailLinearLayout.addView(
+                    extraEmailView,
+                    binding.emailLinearLayout.childCount - 1
+                )
             }
-            setTextForEditText(
+            setTextForTextInputEditText(
                 binding.emailLinearLayout.id,
                 it, R.id.emailTextInputEditText
             )
             addContactsViewModel.removeAllItemsInEmailDataList()
-            addContactsViewModel.removeAllItemsInEmailValidityList()
         }
 
         addContactsViewModel.getAddressDataList().let {
-            for (i in 1 until it.size) {
+            for (i in 0 until it.size-1) {
                 val extraAddressView = layoutInflater.inflate(
                     R.layout.extra_address,
                     binding.addressLinearLayout,
                     false
                 )
-                binding.addressLinearLayout.addView(
-                    extraAddressView,
-                    binding.addressLinearLayout.childCount - 1
-                )
                 val removeButton = extraAddressView.findViewById<ImageButton>(R.id.removeButton)
                 removeButton.setOnClickListener {
                     binding.addressLinearLayout.removeView(extraAddressView)
                 }
-                setTextForEditText(
-                    binding.addressLinearLayout.id,
-                    it, R.id.addressTextInputEditText
+                binding.addressLinearLayout.addView(
+                    extraAddressView,
+                    binding.addressLinearLayout.childCount - 1
                 )
-                addContactsViewModel.removeAllItemsInAddressDataList()
+            }
+            setTextForTextInputEditText(
+                binding.addressLinearLayout.id,
+                it, R.id.addressTextInputEditText
+            )
+            addContactsViewModel.removeAllItemsInAddressDataList()
+        }
+        savedInstanceState.getInt("nameTextInputEditText").let {
+            binding.nameTextInputEditText.requestFocus()
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        }
+        savedInstanceState.getInt("phoneNumberLinearLayout").let { position ->
+            for (i in 0 until binding.phoneNumberLinearLayout.childCount-1){
+                if (i==position){
+                    val view=binding.phoneNumberLinearLayout.getChildAt(i)
+                    val textInputEditText=view.findViewById<TextInputEditText>(R.id.phoneNumberTextInputEditText)
+                    textInputEditText.requestFocus()
+                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+                }
+            }
+        }
+        savedInstanceState.getInt("emailLinearLayout").let { position ->
+            for (i in 0 until binding.emailLinearLayout.childCount-1){
+                if (i==position){
+                    val view=binding.emailLinearLayout.getChildAt(i)
+                    val textInputEditText=view.findViewById<TextInputEditText>(R.id.emailTextInputEditText)
+                    textInputEditText.requestFocus()
+                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+                }
+            }
+        }
+        savedInstanceState.getInt("addressLinearLayout").let { position ->
+            for (i in 0 until binding.addressLinearLayout.childCount-1){
+                if (i==position){
+                    val view=binding.addressLinearLayout.getChildAt(i)
+                    val textInputEditText=view.findViewById<TextInputEditText>(R.id.addressTextInputEditText)
+                    textInputEditText.requestFocus()
+                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+                }
             }
         }
     }
 
 
-    private fun setTextForEditText(
+    private fun setTextForTextInputEditText(
         linearLayoutId: Int,
         dataList: List<String>,
         editTextId: Int
     ) {
         val layout = findViewById<LinearLayout>(linearLayoutId)
-        val validityList:List<Boolean> = if (linearLayoutId==binding.phoneNumberLinearLayout.id){
-            addContactsViewModel.getPhoneNumberValidityList()
-        } else{
-            addContactsViewModel.getEmailValidityList()
-        }
-        for (i in 0 until layout.childCount - 1) {
+        for (i in 0 until layout.childCount-1) {
             val view = layout.getChildAt(i)
             val editText = view.findViewById<TextInputEditText>(editTextId)
             if (dataList.isNotEmpty()) {
@@ -351,14 +429,14 @@ class AddContact : AppCompatActivity() {
             if (linearLayoutId == binding.phoneNumberLinearLayout.id) {
                 val textInputLayout =
                     view.findViewById<TextInputLayout>(R.id.phoneNumberTextInputLayout)
-                if (!validityList[i]) {
+                if (validateForPhoneNumber(editText.text.toString())){
                     textInputLayout.error = null
                 } else {
                     textInputLayout.error = getString(R.string.please_enter_a_valid_phone_number)
                 }
             } else if (linearLayoutId == binding.emailLinearLayout.id) {
                 val textInputLayout = view.findViewById<TextInputLayout>(R.id.emailTextInputLayout)
-                if (!validityList[i]) {
+                if (validateForEmail(editText.text.toString())){
                     textInputLayout.error = null
                 } else {
                     textInputLayout.error = getString(R.string.please_enter_a_valid_email)
@@ -378,23 +456,9 @@ class AddContact : AppCompatActivity() {
                 when (linearLayoutId) {
                     binding.phoneNumberLinearLayout.id -> {
                         addContactsViewModel.addItemInPhoneNumberList(editText.text.toString())
-                        val textInputLayout=view.findViewById<TextInputLayout>(R.id.phoneNumberTextInputLayout)
-                        if (textInputLayout.error!=null){
-                            addContactsViewModel.addItemInPhoneNumberValidityList(true)
-                        }
-                        else{
-                            addContactsViewModel.addItemInPhoneNumberValidityList(false)
-                        }
                     }
                     binding.emailLinearLayout.id -> {
                         addContactsViewModel.addItemInEmailList(editText.text.toString())
-                        val textInputLayout=view.findViewById<TextInputLayout>(R.id.emailTextInputLayout)
-                        if (textInputLayout.error!=null){
-                            addContactsViewModel.addItemInEmailValidityList(true)
-                        }
-                        else{
-                            addContactsViewModel.addItemInEmailValidityList(false)
-                        }
                     }
                     binding.addressLinearLayout.id -> {
                         addContactsViewModel.addItemInAddressList(editText.text.toString())
@@ -420,7 +484,7 @@ class AddContact : AppCompatActivity() {
             if (validateForPhoneNumber(text.toString())) {
                 phoneNumberTextInputLayout.error = null
             } else {
-                phoneNumberTextInputLayout.error = "Please enter a valid phone number"
+                phoneNumberTextInputLayout.error = getString(R.string.please_enter_a_valid_phone_number)
             }
 
         }
@@ -439,7 +503,7 @@ class AddContact : AppCompatActivity() {
             if (validateForEmail(text.toString())) {
                 emailTextInputLayout.error = null
             } else {
-                emailTextInputLayout.error = "Please enter a valid email"
+                emailTextInputLayout.error = getString(R.string.please_enter_a_valid_email)
             }
         }
         val childCountForEmail = binding.emailLinearLayout.childCount
@@ -462,7 +526,7 @@ class AddContact : AppCompatActivity() {
         for (i in 0 until layout.childCount - 1) {
             val view = layout.getChildAt(i)
             val editText = view.findViewById<TextInputEditText>(editTextId)
-            if (editText.text.toString().isNotEmpty()) {
+            if (editText.text.toString().isNotEmpty() && editText.text.toString().isNotBlank()) {
                 dataList.add(editText.text.toString())
             }
         }
@@ -475,7 +539,7 @@ class AddContact : AppCompatActivity() {
             val view = layout.getChildAt(i)
             val editText = view.findViewById<TextInputEditText>(editTextId)
             if (editText.text.toString().isNotEmpty()) {
-                if (!validateForPhoneNumber(editText.text.toString())) {
+                if (!validateForPhoneNumber(editText.text.toString()) && editText.text.toString().isNotBlank()) {
                     return false
                 }
             }
@@ -488,7 +552,7 @@ class AddContact : AppCompatActivity() {
         for (i in 0 until layout.childCount - 1) {
             val view = layout.getChildAt(i)
             val editText = view.findViewById<TextInputEditText>(editTextId)
-            if (editText.text.toString().isNotEmpty()) {
+            if (editText.text.toString().isNotEmpty() && editText.text.toString().isNotBlank()) {
                 if (!validateForEmail(editText.text.toString())) {
                     return false
                 }
@@ -498,14 +562,19 @@ class AddContact : AppCompatActivity() {
     }
 
     private fun validateForPhoneNumber(text: String): Boolean {
-        val pattern = Regex("^\\d{10}$")
-        return pattern.matches(text)
+        if (text.isNotEmpty()) {
+            val pattern = Regex("^\\d{10}$")
+            return pattern.matches(text)
+        }
+        return true
     }
 
     private fun validateForEmail(text: String): Boolean {
 //        val pattern=Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,4}\"")
-        return Patterns.EMAIL_ADDRESS.matcher(text).matches()
-
+        if (text.isNotEmpty()) {
+            return Patterns.EMAIL_ADDRESS.matcher(text).matches()
+        }
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

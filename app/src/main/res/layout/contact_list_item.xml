@@ -2,41 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-<!--    <androidx.cardview.widget.CardView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:backgroundTint="@color/recyclerItemColor"-->
-<!--        android:id="@+id/cardView">-->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/baseline_person_50"
-                android:scaleType="centerCrop"
-                android:background="@drawable/circle_contact_image"
-                android:padding="5dp"
-                android:id="@+id/contactImage"
-                android:contentDescription="@null"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/contactDisplayName"
-                android:textSize="26sp"
-                android:layout_marginStart="8dp"
-                android:layout_gravity="center"
-                android:textColor="@color/textColor"
-                android:maxLines="1"
-                android:ellipsize="end"/>
-        </LinearLayout>
-<!--    </androidx.cardview.widget.CardView>-->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="bottom"
-        android:background="@color/grey"/>
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="@color/recyclerItemColor">
+
+    <ImageView
+        android:id="@+id/contactImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/circle_contact_image"
+        android:contentDescription="@null"
+        android:padding="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/baseline_person_50" />
+
+    <TextView
+        android:id="@+id/contactDisplayName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/textColor"
+        android:textSize="26sp" />
+
 </LinearLayout>

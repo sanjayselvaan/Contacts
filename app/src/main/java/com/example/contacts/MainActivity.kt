@@ -5,9 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.contacts.databinding.ActivityMainBinding
-import com.example.contacts.databinding.FragmentContactListBinding
 
 class MainActivity : AppCompatActivity(),RecyclerItemClickListener {
     private lateinit var binding:ActivityMainBinding
@@ -26,6 +27,9 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener {
         binding.recyclerView.layoutManager= LinearLayoutManager(this)
         binding.recyclerView.adapter=ContactsListRecyclerViewAdapter(this)
         (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(DataBase.getContactsList())
+        val dividerItem=DividerItemDecoration(this,LinearLayoutManager.HORIZONTAL)
+        dividerItem.setDrawable(ContextCompat.getDrawable(this,R.drawable.divider)!!)
+        binding.recyclerView.addItemDecoration(DividerItemDecoration(this,LinearLayoutManager.HORIZONTAL))
         binding.fab.setOnClickListener {
             val intent= Intent(this,AddContact::class.java)
             fetchResultFromAddContactActivity.launch(intent)
