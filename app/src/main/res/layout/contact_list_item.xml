@@ -25,7 +25,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/contactName"
+                android:id="@+id/contactDisplayName"
                 android:textSize="26sp"
                 android:layout_marginStart="8dp"
                 android:layout_gravity="center"

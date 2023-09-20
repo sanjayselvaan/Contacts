@@ -13,4 +13,5 @@
     <color name="textColor">#FF000000</color>
     <color name="textHintColor">#9E9E9E</color>
     <color name="hintColorForTextInputLayout">#BF667EFB</color>
+    <color name="red">#E82929</color>
 </resources>

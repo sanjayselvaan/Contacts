@@ -29,7 +29,14 @@ class ContactsListRecyclerViewAdapter(private val itemClick:RecyclerItemClickLis
     }
     inner class ContactItemViewHolder(private val binding: ContactListItemBinding):RecyclerView.ViewHolder(binding.root){
        fun bind(dataItem:Contact){
-           binding.contactName.text=dataItem.contactName
+           binding.contactDisplayName.text=dataItem.contactName
+           if (!dataItem.contactName.isNullOrBlank()) {
+               binding.contactDisplayName.text = dataItem.contactName
+           } else if (!dataItem.contactPhoneNumber.isNullOrEmpty()) {
+               binding.contactDisplayName.text = dataItem.contactPhoneNumber[0]
+           } else if (!dataItem.contactEmail.isNullOrEmpty()) {
+               binding.contactDisplayName.text = dataItem.contactEmail[0]
+           }
        }
     }
     fun setDataList(newDataList: List<Contact>){

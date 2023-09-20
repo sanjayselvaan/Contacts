@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.contacts.databinding.ActivityMainBinding
+import com.example.contacts.databinding.FragmentContactListBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),RecyclerItemClickListener {
     private lateinit var binding:ActivityMainBinding
     private val fetchResultFromAddContactActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -21,23 +23,21 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title=getString(R.string.app_name)
         binding= ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        if (savedInstanceState==null){
-            supportFragmentManager.beginTransaction().add(R.id.fragmentContainer,ContactListFragment(),
-                contactListFragmentTag).commit()
-        }
+        binding.recyclerView.layoutManager= LinearLayoutManager(this)
+        binding.recyclerView.adapter=ContactsListRecyclerViewAdapter(this)
+        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(DataBase.getContactsList())
         binding.fab.setOnClickListener {
             val intent= Intent(this,AddContact::class.java)
             fetchResultFromAddContactActivity.launch(intent)
         }
     }
     private fun notifyRecyclerAdapter(){
-        val fragment=supportFragmentManager.findFragmentByTag(contactListFragmentTag)
-        if (fragment!=null){
-            (fragment as ContactListFragment).notifyRecyclerAdapterForNewContact()
-        }
+        val list=DataBase.getContactsList()
+        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(list)
     }
-    companion object{
-        const val contactListFragmentTag="fragment_tag"
+    override fun itemOnClick(position: Int) {
+        val intent= Intent(this,ShowContactDetails::class.java)
+        intent.putExtra(ContactListFragment.positionOfDataItem,position)
+        startActivity(intent)
     }
 }

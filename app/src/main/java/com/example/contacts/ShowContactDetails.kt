@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import com.example.contacts.databinding.ActivityContactDetailsBinding
 
@@ -21,23 +22,44 @@ class ShowContactDetails : AppCompatActivity() {
         val contactNumber = DataBase.getContactNumber(position)
         val contactEmail = DataBase.getContactEmail(position)
         val contactAddress = DataBase.getContactAddress(position)
-        binding.nameTextView.text = contactName
+        contactName?.let {
+            binding.nameLayout.visibility=View.VISIBLE
+            binding.nameTextView.text = it
+        }
         contactNumber?.let {
             if (it.isNotEmpty()) {
                 binding.phoneNumberLayout.visibility = View.VISIBLE
-                binding.phoneNumberTextView.text = it
+                for (i in it.indices){
+                    val extraTextView =
+                        layoutInflater.inflate(R.layout.extra_text_view, binding.contactPhoneNumberLinearLayout,false)
+                    val textView=extraTextView.findViewById<TextView>(R.id.extraTextView)
+                    textView.text = it[i]
+                    binding.contactPhoneNumberLinearLayout.addView(extraTextView)
+                }
             }
         }
         contactEmail?.let {
             if (it.isNotEmpty()) {
                 binding.emailLayout.visibility = View.VISIBLE
-                binding.emailTextView.text = it
+                for (i in it.indices){
+                    val extraTextView =
+                        layoutInflater.inflate(R.layout.extra_text_view, binding.contactEmailLinearLayout,false)
+                    val textView=extraTextView.findViewById<TextView>(R.id.extraTextView)
+                    textView.text = it[i]
+                    binding.contactEmailLinearLayout.addView(extraTextView)
+                }
             }
         }
         contactAddress?.let {
             if (it.isNotEmpty()) {
                 binding.addressLayout.visibility = View.VISIBLE
-                binding.addressTextView.text = it
+                for (i in it.indices){
+                    val extraTextView =
+                        layoutInflater.inflate(R.layout.extra_text_view, binding.contactAddressLinearLayout,false)
+                    val textView=extraTextView.findViewById<TextView>(R.id.extraTextView)
+                    textView.text = it[i]
+                    binding.contactAddressLinearLayout.addView(extraTextView)
+                }
             }
         }
         backPressed = object : OnBackPressedCallback(true) {

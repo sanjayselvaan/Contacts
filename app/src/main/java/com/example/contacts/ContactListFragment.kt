@@ -17,9 +17,9 @@ class ContactListFragment : Fragment(),RecyclerItemClickListener {
         savedInstanceState: Bundle?
     ): View{
         binding= FragmentContactListBinding.inflate(inflater,container,false)
-        binding.recyclerView.layoutManager=LinearLayoutManager(requireContext())
-        binding.recyclerView.adapter=ContactsListRecyclerViewAdapter(this)
-        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(DataBase.getContactsList())
+//        binding.recyclerView.layoutManager=LinearLayoutManager(requireContext())
+//        binding.recyclerView.adapter=ContactsListRecyclerViewAdapter(this)
+//        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(DataBase.getContactsList())
         return binding.root
     }
 
@@ -31,7 +31,7 @@ class ContactListFragment : Fragment(),RecyclerItemClickListener {
     fun notifyRecyclerAdapterForNewContact(){
         val list=DataBase.getContactsList()
         Log.d("test1","in fragment"+list.toString())
-        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(list)
+//        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(list)
     }
     companion object{
         const val positionOfDataItem="position_of_data_item"

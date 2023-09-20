@@ -7,21 +7,21 @@
     android:weightSum="10">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/addressTextInputLayout"
+        android:id="@+id/emailTextInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/address"
+        android:hint="@string/email"
         android:layout_marginTop="16dp"
         android:layout_weight="9"
         app:errorEnabled="true"
         app:errorTextColor="@color/red">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/addressTextInputEditText"
+            android:id="@+id/emailTextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPostalAddress|textCapWords"
+            android:inputType="textEmailAddress"
             android:textColor="@color/textColor"
             android:textSize="16sp"/>
     </com.google.android.material.textfield.TextInputLayout>
