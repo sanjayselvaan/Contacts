@@ -6,7 +6,6 @@
     android:orientation="horizontal"
     android:weightSum="10"
     android:id="@+id/extraPhoneView">
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/phoneNumberTextInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -35,8 +34,7 @@
         android:layout_gravity="center"
         android:id="@+id/removeButton"
         android:layout_weight="1"
-        android:padding="8dp"
+        android:padding="12dp"
         android:background="@color/removeButtonBackGround"
-        android:contentDescription="@null"/>
-
+        android:contentDescription="@string/cancel"/>
 </LinearLayout>

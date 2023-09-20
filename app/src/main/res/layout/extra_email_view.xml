@@ -35,8 +35,8 @@
         android:layout_gravity="center"
         android:id="@+id/removeButton"
         android:layout_weight="1"
-        android:padding="8dp"
+        android:padding="12dp"
         android:background="@color/removeButtonBackGround"
-        android:contentDescription="@null"/>
+        android:contentDescription="@string/cancel"/>
 
 </LinearLayout>
