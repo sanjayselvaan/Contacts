@@ -66,20 +66,24 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                Log.d("test1","OnTextChange")
-                val queryText=newText?.lowercase()
-                queryText?.let { query ->
-                    val filterList=DataBase.getContactsList().filter { contact ->
-                        contact.contactName?.contains(query, ignoreCase = true) ?: false || contact.contactPhoneNumber?.any {
+                Log.d("test1", "OnTextChange")
+                newText?.let { query ->
+                    val filterList = DataBase.getContactsList().filter { contact ->
+                        contact.contactName?.contains(
+                            query,
+                            ignoreCase = true
+                        ) ?: false || contact.contactPhoneNumber?.any {
                             it.contains(query, ignoreCase = true)
-                        } ?: false  || contact.contactEmail?.any { it ->
+                        } ?: false || contact.contactEmail?.any { it ->
                             it.contains(query, ignoreCase = true)
-                        } ?:false || contact.contactAddress?.any{
+                        } ?: false || contact.contactAddress?.any {
                             it.contains(query, ignoreCase = true)
                         } ?: false
                     }
-                    searchQuery=query
-                    (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(filterList)
+                    searchQuery = query
+                    (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
+                        filterList
+                    )
                 }
                 return true
             }
