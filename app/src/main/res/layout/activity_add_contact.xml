@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -27,10 +27,9 @@
                 android:layout_marginStart="8dp"
                 android:contentDescription="@null"
                 android:padding="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_gravity="center"
                 android:src="@drawable/baseline_person_40"
-                android:id="@+id/nameIcon"
-                android:layout_alignTop="@id/nameTextInputLayout"/>
+                android:id="@+id/nameIcon"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameTextInputLayout"
@@ -40,7 +39,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginBottom="8dp"
-                android:layout_toEndOf="@id/nameIcon"
                 android:hint="@string/name"
                 android:padding="12dp"
                 android:textColorHint="@color/textHintColor">
@@ -54,9 +52,9 @@
                     android:textColor="@color/textColor"
                     android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -71,8 +69,7 @@
                 android:layout_marginTop="16dp"
                 android:contentDescription="@null"
                 android:padding="16dp"
-                android:src="@drawable/baseline_phone_50"
-                android:layout_alignTop="@id/phoneNumberLinearLayout"/>
+                android:src="@drawable/baseline_phone_50"/>
 
             <LinearLayout
                 android:id="@+id/phoneNumberLinearLayout"
@@ -80,16 +77,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:orientation="vertical"
-                android:padding="4dp"
-                android:layout_toEndOf="@id/phoneIcon">
+                android:padding="4dp">
 
                 <include
                     android:id="@+id/phoneView"
                     layout="@layout/extra_input_view" />
             </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -103,8 +99,7 @@
                 android:layout_marginTop="16dp"
                 android:contentDescription="@null"
                 android:padding="16dp"
-                android:src="@drawable/baseline_email_50"
-                android:layout_alignTop="@id/emailLinearLayout"/>
+                android:src="@drawable/baseline_email_50"/>
 
             <LinearLayout
                 android:id="@+id/emailLinearLayout"
@@ -112,17 +107,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:orientation="vertical"
-                android:padding="4dp"
-                android:layout_toEndOf="@id/emailIcon">
+                android:padding="4dp">
 
                 <include
                     android:id="@+id/emailView"
                     layout="@layout/extra_input_view" />
             </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -136,8 +130,7 @@
                 android:layout_marginTop="16dp"
                 android:contentDescription="@null"
                 android:padding="16dp"
-                android:src="@drawable/baseline_location_on_50"
-                android:layout_alignTop="@+id/addressLinearLayout"/>
+                android:src="@drawable/baseline_location_on_50"/>
 
             <LinearLayout
                 android:id="@+id/addressLinearLayout"
@@ -145,14 +138,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:orientation="vertical"
-                android:padding="4dp"
-                android:layout_toEndOf="@id/addressIcon">
+                android:padding="4dp">
 
                 <include
                     android:id="@+id/addressView"
                     layout="@layout/extra_input_view" />
             </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
 
