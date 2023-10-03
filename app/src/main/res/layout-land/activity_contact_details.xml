@@ -23,11 +23,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@color/backGroundColor">
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/nameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:visibility="gone"
                 android:background="@drawable/layout_border"
                 android:layout_margin="16dp">
@@ -43,17 +43,15 @@
                     android:id="@+id/nameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_toEndOf="@+id/nameIcon"
                     android:textSize="24sp"
                     android:textColor="@color/textColor"
                     android:padding="16dp"/>
-            </RelativeLayout>
-            <RelativeLayout
+            </LinearLayout>
+            <LinearLayout
                 android:id="@+id/phoneNumberLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:visibility="gone"
                 android:background="@drawable/layout_border"
                 android:layout_margin="16dp">
@@ -69,15 +67,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/contactPhoneNumberLinearLayout"
-                    android:orientation="vertical"
-                    android:layout_toEndOf="@id/phoneIcon"/>
-            </RelativeLayout>
+                    android:orientation="vertical"/>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/emailLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:visibility="gone"
                 android:background="@drawable/layout_border"
                 android:layout_margin="16dp">
@@ -93,14 +90,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/contactEmailLinearLayout"
-                    android:orientation="vertical"
-                    android:layout_toEndOf="@id/mailIcon"/>
-            </RelativeLayout>
-            <RelativeLayout
+                    android:orientation="vertical"/>
+            </LinearLayout>
+            <LinearLayout
                 android:id="@+id/addressLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:visibility="gone"
                 android:background="@drawable/layout_border"
                 android:layout_margin="16dp">
@@ -116,9 +112,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/contactAddressLinearLayout"
-                    android:orientation="vertical"
-                    android:layout_toEndOf="@id/addressIcon"/>
-            </RelativeLayout>
+                    android:orientation="vertical"/>
+            </LinearLayout>
         </LinearLayout>
         </ScrollView>
 </LinearLayout>

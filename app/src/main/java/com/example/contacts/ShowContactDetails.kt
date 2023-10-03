@@ -4,9 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import com.example.contacts.databinding.ActivityContactDetailsBinding
+import com.example.contacts.databinding.ExtraTextViewBinding
 
 class ShowContactDetails : AppCompatActivity() {
     private lateinit var binding: ActivityContactDetailsBinding
@@ -17,11 +17,12 @@ class ShowContactDetails : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding = ActivityContactDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val position = intent.getIntExtra(MainActivity.positionOfDataItem, 0)
-        val contactName = DataBase.getContactName(position)
-        val contactNumber = DataBase.getContactNumber(position)
-        val contactEmail = DataBase.getContactEmail(position)
-        val contactAddress = DataBase.getContactAddress(position)
+        val id = intent.getIntExtra(MainActivity.positionOfDataItem, 0)
+        val contactItem=DataBase.getContact(id)
+        val contactName = contactItem?.contactName
+        val contactNumber = contactItem?.contactPhoneNumber
+        val contactEmail = contactItem?.contactEmail
+        val contactAddress = contactItem?.contactAddress
         contactName?.let {
             binding.nameLayout.visibility=View.VISIBLE
             binding.nameTextView.text = it
@@ -29,36 +30,31 @@ class ShowContactDetails : AppCompatActivity() {
         contactNumber?.let {
             if (it.isNotEmpty()) {
                 binding.phoneNumberLayout.visibility = View.VISIBLE
-                for (i in it.indices){
-                    val extraTextView =
-                        layoutInflater.inflate(R.layout.extra_text_view, binding.contactPhoneNumberLinearLayout,false)
-                    val textView=extraTextView.findViewById<TextView>(R.id.extraTextView)
-                    textView.text = it[i]
-                    binding.contactPhoneNumberLinearLayout.addView(extraTextView)
+                it.forEach {  text->
+                    val extraTextViewBinding =ExtraTextViewBinding.inflate(layoutInflater,binding.contactPhoneNumberLinearLayout,false)
+                    extraTextViewBinding.extraTextView.text = text
+                    binding.contactPhoneNumberLinearLayout.addView(extraTextViewBinding.root)
                 }
             }
         }
         contactEmail?.let {
             if (it.isNotEmpty()) {
                 binding.emailLayout.visibility = View.VISIBLE
-                for (i in it.indices){
-                    val extraTextView =
-                        layoutInflater.inflate(R.layout.extra_text_view, binding.contactEmailLinearLayout,false)
-                    val textView=extraTextView.findViewById<TextView>(R.id.extraTextView)
-                    textView.text = it[i]
-                    binding.contactEmailLinearLayout.addView(extraTextView)
+                it.forEach{text->
+                    val extraTextViewBinding =ExtraTextViewBinding.inflate(layoutInflater,binding.contactEmailLinearLayout,false)
+                    extraTextViewBinding.extraTextView.text = text
+                    binding.contactEmailLinearLayout.addView(extraTextViewBinding.root)
                 }
             }
         }
         contactAddress?.let {
             if (it.isNotEmpty()) {
                 binding.addressLayout.visibility = View.VISIBLE
-                for (i in it.indices){
-                    val extraTextView =
-                        layoutInflater.inflate(R.layout.extra_text_view, binding.contactAddressLinearLayout,false)
-                    val textView=extraTextView.findViewById<TextView>(R.id.extraTextView)
-                    textView.text = it[i]
-                    binding.contactAddressLinearLayout.addView(extraTextView)
+                it.forEach{text->
+                    val extraTextViewBinding =
+                        ExtraTextViewBinding.inflate(layoutInflater,binding.contactAddressLinearLayout,false)
+                    extraTextViewBinding.extraTextView.text = text
+                    binding.contactAddressLinearLayout.addView(extraTextViewBinding.root)
                 }
             }
         }

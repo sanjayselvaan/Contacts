@@ -2,23 +2,27 @@ package com.example.contacts
 
 object DataBase {
     private var contactsList = mutableListOf<Contact>()
-    fun getContactsList(): List<Contact> = contactsList.sortedBy {
-        it.contactName?.lowercase()
+    private var idLatest=1000
+
+    fun getContactsList():List<Contact> = contactsList.sortedBy{
+        getDisplayName(it)
     }
 
-    fun getContactName(position: Int): String? = contactsList[position].contactName
+    fun getContact(id:Int): Contact? {
+        contactsList.forEach {
+            if (it.contactID==id){
+                return it
+            }
+        }
+        return null
+    }
 
-    fun getContactNumber(position: Int): List<String>? = contactsList[position].contactPhoneNumber
-
-    fun getContactEmail(position: Int): List<String>? = contactsList[position].contactEmail
-
-    fun getContactListSize(): Int = contactsList.size
-
-    fun getContactAddress(position: Int): List<String>? = contactsList[position].contactAddress
 
     fun addContact(contact: Contact) {
         contactsList.add(contact)
+        idLatest++
     }
+    fun getLatestAvailableId()= idLatest
 
     init {
         val name = mutableListOf(
@@ -52,11 +56,20 @@ object DataBase {
         for (i in name.indices) {
             contactsList.add(
                 i, Contact(
-                    i, name[i],
+                    idLatest, name[i],
                     (phoneNumber[i]), emailAddress[i],
                     address[i]
                 )
             )
+            idLatest++
+        }
+    }
+    private fun getDisplayName(contact:Contact): String {
+        return when{
+            contact.contactName!=null-> contact.contactName
+            contact.contactPhoneNumber!=null-> contact.contactPhoneNumber.first()
+            contact.contactEmail!=null-> contact.contactEmail.first()
+            else->""
         }
     }
 

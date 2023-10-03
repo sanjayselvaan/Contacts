@@ -20,11 +20,12 @@
     <string name="contact_details">Contact Details</string>
     <string name="your_changes_have_not_been_saved_warning">Your changes have not been saved</string>
     <string name="discard">Discard</string>
-    <string name="enter_valid_inputs">Enter Valid Inputs</string>
-    <string name="is_saved"> is saved</string>
+    <string name="enter_valid_inputs">Enter Valid Input Here</string>
+    <string name="is_saved">is saved</string>
     <string name="please_enter_a_valid_phone_number">Please enter a valid phone number</string>
     <string name="please_enter_a_valid_email">Please enter a valid email</string>
     <string name="nothing_to_save">Nothing to save, Exit?</string>
     <string name="ok">OK</string>
     <string name="leave">Leave</string>
+    <string name="search">Search</string>
 </resources>

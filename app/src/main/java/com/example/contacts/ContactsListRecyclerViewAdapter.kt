@@ -26,7 +26,7 @@ class ContactsListRecyclerViewAdapter(private val itemClick:RecyclerItemClickLis
         }
 
     }
-    inner class ContactItemViewHolder(private val binding: ContactListItemBinding):RecyclerView.ViewHolder(binding.root){
+    class ContactItemViewHolder(private val binding: ContactListItemBinding):RecyclerView.ViewHolder(binding.root){
        fun bind(dataItem:Contact){
            binding.contactDisplayName.text=dataItem.contactName
            if (!dataItem.contactName.isNullOrBlank()) {
