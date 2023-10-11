@@ -25,10 +25,12 @@ class AddContact : AppCompatActivity() {
     private lateinit var backPressed: OnBackPressedCallback
     private lateinit var binding: ActivityAddContactBinding
     private lateinit var addContactsViewModel: AddContactsViewModel
+    private lateinit var dataBase:DataBase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        dataBase= DataBase(applicationContext)
         supportActionBar?.title = getString(R.string.add_contact)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         addContactsViewModel = ViewModelProvider(this)[AddContactsViewModel::class.java]
@@ -74,7 +76,7 @@ class AddContact : AppCompatActivity() {
         var phoneNumberList: List<String>?
         var emailList: List<String>?
         var addressList: List<String>?
-        val newId = DataBase.getLatestAvailableId()
+        val newId:Long
         val alertDialog=AlertDialog.Builder(this)
         if (checkForPhoneNumberValidation(
                 binding.phoneNumberLinearLayout.id,
@@ -117,15 +119,7 @@ class AddContact : AppCompatActivity() {
                 addressList = null
             }
             if (!newContactName.isNullOrEmpty()||!newContactName.isNullOrBlank() || !phoneNumberList.isNullOrEmpty() || !emailList.isNullOrEmpty() || !addressList.isNullOrEmpty()) {
-                DataBase.addContact(
-                    Contact(
-                        newId,
-                        newContactName,
-                        phoneNumberList,
-                        emailList,
-                        addressList
-                    )
-                )
+                newId=dataBase.addContact(newContactName, phoneNumberList, emailList, addressList)
                 setResult(RESULT_OK)
                 val toastText = when {
                     newContactName?.isNotBlank() == true -> {
@@ -149,7 +143,7 @@ class AddContact : AppCompatActivity() {
                         .show()
                 }
                 val intentForShowDetails = Intent(this, ShowContactDetails::class.java)
-                intentForShowDetails.putExtra(MainActivity.positionOfDataItem, newId)
+                intentForShowDetails.putExtra(MainActivity.idOfDataItem, newId)
                 startActivity(intentForShowDetails)
                 finish()
             } else {

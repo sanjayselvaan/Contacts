@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
     private lateinit var binding:ActivityMainBinding
     private var searchQuery:String?=null
     private var searchQueryDuplicate:String?=null
+    private lateinit var dataBase: DataBase
     private val fetchResultFromAddContactActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -27,9 +28,10 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
         supportActionBar?.title=getString(R.string.app_name)
         binding= ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        dataBase= DataBase(applicationContext)
         binding.recyclerView.layoutManager= LinearLayoutManager(this)
         binding.recyclerView.adapter=ContactsListRecyclerViewAdapter(this)
-        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(DataBase.getContactsList())
+        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(dataBase.getContactsList())
         val dividerItem= DividerItemDecoration(this,LinearLayoutManager.VERTICAL)
         binding.recyclerView.addItemDecoration(dividerItem)
         binding.fab.setOnClickListener {
@@ -41,16 +43,16 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
         }
     }
     private fun notifyRecyclerAdapter(){
-        val list=DataBase.getContactsList()
+        val list=dataBase.getContactsList()
         (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(list)
     }
-    override fun itemOnClick(position: Int) {
+    override fun itemOnClick(id: Long) {
         val intent= Intent(this,ShowContactDetails::class.java)
-        intent.putExtra(positionOfDataItem,position)
-        startActivity(intent)
+        intent.putExtra(idOfDataItem,id)
+        fetchResultFromAddContactActivity.launch(intent)
     }
     companion object{
-        const val positionOfDataItem="position_of_data_item"
+        const val idOfDataItem="position_of_data_item"
         const val searchQueryKey="search_query"
     }
 
@@ -68,7 +70,7 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
             override fun onQueryTextChange(newText: String?): Boolean {
                 Log.d("test1", "OnTextChange")
                 newText?.let { query ->
-                    val filterList = DataBase.getContactsList().filter { contact ->
+                    val filterList = dataBase.getContactsList().filter { contact ->
                         contact.contactName?.contains(
                             query,
                             ignoreCase = true

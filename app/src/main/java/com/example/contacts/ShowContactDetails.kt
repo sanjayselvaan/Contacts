@@ -2,6 +2,7 @@ package com.example.contacts
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -11,14 +12,17 @@ import com.example.contacts.databinding.ExtraTextViewBinding
 class ShowContactDetails : AppCompatActivity() {
     private lateinit var binding: ActivityContactDetailsBinding
     private lateinit var backPressed: OnBackPressedCallback
+    private lateinit var dataBase:DataBase
+    private var id:Long?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.title = getString(R.string.contact_details)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding = ActivityContactDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val id = intent.getIntExtra(MainActivity.positionOfDataItem, 0)
-        val contactItem=DataBase.getContact(id)
+        dataBase=DataBase(applicationContext)
+        id = intent.getLongExtra(MainActivity.idOfDataItem, 0)
+        val contactItem=dataBase.getContact(id!!)
         val contactName = contactItem?.contactName
         val contactNumber = contactItem?.contactPhoneNumber
         val contactEmail = contactItem?.contactEmail
@@ -71,8 +75,21 @@ class ShowContactDetails : AppCompatActivity() {
                 backPressed.handleOnBackPressed()
                 return true
             }
+            R.id.action_delete->{
+                id?.let {
+                    dataBase.deleteContact(it)
+                    setResult(RESULT_OK)
+                    finish()
+                }
+
+            }
         }
         return super.onOptionsItemSelected(item)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.show_contact_details_menu,menu)
+        return true
     }
 }
