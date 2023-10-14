@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
         supportActionBar?.title=getString(R.string.app_name)
         binding= ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dataBase= DataBase(applicationContext)
+        dataBase= DataBase(this)
         binding.recyclerView.layoutManager= LinearLayoutManager(this)
         binding.recyclerView.adapter=ContactsListRecyclerViewAdapter(this)
         (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(dataBase.getContactsList())

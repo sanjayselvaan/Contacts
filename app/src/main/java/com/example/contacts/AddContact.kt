@@ -30,7 +30,7 @@ class AddContact : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dataBase= DataBase(applicationContext)
+        dataBase= DataBase(this)
         supportActionBar?.title = getString(R.string.add_contact)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         addContactsViewModel = ViewModelProvider(this)[AddContactsViewModel::class.java]
