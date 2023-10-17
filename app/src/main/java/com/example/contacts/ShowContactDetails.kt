@@ -2,6 +2,7 @@ package com.example.contacts
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,7 +15,9 @@ class ShowContactDetails : AppCompatActivity() {
     private lateinit var binding: ActivityContactDetailsBinding
     private lateinit var backPressed: OnBackPressedCallback
     private lateinit var dataBase:DataBase
-    private var id:Long?=null
+    private var deleteAlertVisibility=false
+    private lateinit var alertDialog: AlertDialog.Builder
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.title = getString(R.string.contact_details)
@@ -22,12 +25,24 @@ class ShowContactDetails : AppCompatActivity() {
         binding = ActivityContactDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dataBase=DataBase(this)
-        id = intent.getLongExtra(MainActivity.idOfDataItem, 0)
-        val contactItem=dataBase.getContact(id!!)
+        val id = intent.getLongExtra(MainActivity.idOfDataItem, 0)
+        val contactItem=dataBase.getContact(id)
         val contactName = contactItem?.contactName
         val contactNumber = contactItem?.contactPhoneNumber
         val contactEmail = contactItem?.contactEmail
         val contactAddress = contactItem?.contactAddress
+        alertDialog= AlertDialog.Builder(this)
+        alertDialog.setPositiveButton(R.string.delete){_,_->
+            dataBase.deleteContact(id)
+            setResult(RESULT_OK)
+            finish()
+        }
+        alertDialog.setNegativeButton(R.string.cancel){dialog,_->
+            dialog.dismiss()
+            deleteAlertVisibility=false
+        }
+        alertDialog.setTitle(R.string.delete)
+        alertDialog.setMessage(R.string.delete_contact_alert_message)
         contactName?.let {
             binding.nameLayout.visibility=View.VISIBLE
             binding.nameTextView.text = it
@@ -68,6 +83,17 @@ class ShowContactDetails : AppCompatActivity() {
                 finish()
             }
         }
+        if (savedInstanceState!=null){
+            deleteAlertVisibility=savedInstanceState.getBoolean(deleteAlertKey)
+        }
+        if (deleteAlertVisibility){
+            alertDialog.show()
+        }
+        alertDialog.setOnCancelListener {
+            Log.d("test1","dimiss")
+            deleteAlertVisibility=false
+        }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -77,21 +103,8 @@ class ShowContactDetails : AppCompatActivity() {
                 return true
             }
             R.id.action_delete->{
-                id?.let {
-                    val alertDialog= AlertDialog.Builder(this)
-                    alertDialog.setPositiveButton(R.string.delete){_,_->
-                        dataBase.deleteContact(it)
-                        setResult(RESULT_OK)
-                        finish()
-                    }
-                    alertDialog.setNegativeButton(R.string.cancel){dialog,_->
-                        dialog.dismiss()
-                    }
-                    alertDialog.setTitle(R.string.delete)
-                    alertDialog.setMessage(R.string.delete_contact_alert_message)
-                    alertDialog.show()
-                }
-
+                alertDialog.show()
+                deleteAlertVisibility=true
             }
         }
         return super.onOptionsItemSelected(item)
@@ -101,5 +114,14 @@ class ShowContactDetails : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.show_contact_details_menu,menu)
         return true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(deleteAlertKey,deleteAlertVisibility)
+    }
+
+    companion object{
+        private const val deleteAlertKey="delete_alert_key"
     }
 }

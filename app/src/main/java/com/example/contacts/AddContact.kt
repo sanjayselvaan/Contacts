@@ -26,6 +26,7 @@ class AddContact : AppCompatActivity() {
     private lateinit var binding: ActivityAddContactBinding
     private lateinit var addContactsViewModel: AddContactsViewModel
     private lateinit var dataBase:DataBase
+    private var exitAlertDialogVisibility:Boolean=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddContactBinding.inflate(layoutInflater)
@@ -40,30 +41,41 @@ class AddContact : AppCompatActivity() {
         }
 
         val alertDialog = AlertDialog.Builder(this)
+        alertDialog.setMessage(getString(R.string.your_changes_have_not_been_saved_warning))
+        alertDialog.setPositiveButton(R.string.save) { _, _ ->
+            saveButtonOnClickAction()
+        }
+        alertDialog.setNegativeButton(R.string.discard) { _, _ ->
+            finish()
+        }
+        alertDialog.setNeutralButton(R.string.cancel) { dialog, _ ->
+            dialog.dismiss()
+            exitAlertDialogVisibility=false
+        }
         backPressed = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val name = binding.nameTextInputEditText.text
                 val phoneNumberList=collectAndReturnTextFromTextInputEditText(R.id.phoneNumberLinearLayout,R.id.textInputEditText)
                 val emailList=collectAndReturnTextFromTextInputEditText(R.id.emailLinearLayout,R.id.textInputEditText)
                 val addressList=collectAndReturnTextFromTextInputEditText(R.id.addressLinearLayout,R.id.textInputEditText)
-                alertDialog.setMessage(getString(R.string.your_changes_have_not_been_saved_warning))
-                alertDialog.setPositiveButton(R.string.save) { _, _ ->
-                    saveButtonOnClickAction()
-                }
-                alertDialog.setNegativeButton(R.string.discard) { _, _ ->
-                    finish()
-                }
-                alertDialog.setNeutralButton(R.string.cancel) { dialog, _ ->
-                    dialog.dismiss()
-                }
                 if (!name.isNullOrEmpty() || phoneNumberList.isNotEmpty() || emailList.isNotEmpty() || addressList.isNotEmpty()) {
                     alertDialog.show()
+                    exitAlertDialogVisibility=true
                 } else {
                     finish()
                 }
             }
         }
         onBackPressedDispatcher.addCallback(backPressed)
+        if (savedInstanceState!=null){
+            exitAlertDialogVisibility=savedInstanceState.getBoolean(exitAlertDialogKey)
+        }
+        if (exitAlertDialogVisibility){
+            alertDialog.show()
+        }
+        alertDialog.setOnCancelListener {
+            exitAlertDialogVisibility=false
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -175,6 +187,7 @@ class AddContact : AppCompatActivity() {
         collectAndStoreTextFromTextInputEditText(
             binding.addressLinearLayout.id, R.id.textInputEditText
         )
+        outState.putBoolean(exitAlertDialogKey,exitAlertDialogVisibility)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -475,5 +488,8 @@ class AddContact : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
 
+    }
+    companion object{
+        private const val exitAlertDialogKey="exit_alert_dialog_key"
     }
 }

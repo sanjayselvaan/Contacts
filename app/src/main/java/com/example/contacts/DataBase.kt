@@ -6,15 +6,16 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 
-class DataBase(private val context: Context) : SQLiteOpenHelper(context,"DATABASE",null,1) {
+class DataBase(private val context: Context) : SQLiteOpenHelper(context, contactDataBaseName,null,1) {
     companion object{
-        const val contactTableName="Contact"
-        const val contactAddressTableName="Address"
-        const val contactID="_id"
-        const val contactName="Contact_Name"
-        const val contactPhoneNumberList="Phone_Number"
-        const val contactEmailList="Email"
-        const val contactAddress="Address"
+        private const val contactDataBaseName="Contact_DataBase"
+        private const val contactTableName="Contact"
+        private const val contactAddressTableName="Address"
+        private const val contactID="_id"
+        private const val contactName="Contact_Name"
+        private const val contactPhoneNumberList="Phone_Number"
+        private const val contactEmailList="Email"
+        private const val contactAddress="Address"
     }
 
     fun getContactsList():List<Contact>{
@@ -161,7 +162,7 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context,"DATABAS
         return contactList
     }
 
-    private fun insertInitialValues(){
+    private fun insertInitialValues(db:SQLiteDatabase){
         val name = mutableListOf(
             "Aaaaa",
             "Bbbbbb",
@@ -170,28 +171,38 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context,"DATABAS
             "Eeee"
         )//,"F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z")
         val phoneNumber = mutableListOf(
-            listOf("1"),
-            listOf("2"),
-            listOf("3"),
-            listOf("4"),
-            listOf("5")
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
         )//,PhoneNumber(6),PhoneNumber(7),PhoneNumber(8),PhoneNumber(9),PhoneNumber(10),PhoneNumber(11),PhoneNumber(12),PhoneNumber(13),PhoneNumber(14),PhoneNumber(15),PhoneNumber(16),PhoneNumber(17),PhoneNumber(18),PhoneNumber(19),PhoneNumber(20),PhoneNumber(21),PhoneNumber(22),PhoneNumber(23),PhoneNumber(24),PhoneNumber(25),PhoneNumber(26))
         val emailAddress = mutableListOf(
-            listOf("A@email.com"),
-            listOf("B@email.com"),
-            listOf("C@email.com"),
-            listOf("D@email.com"),
-            listOf("E@email.com")
+            "A@email.com",
+            "B@email.com",
+            "C@email.com",
+            "D@email.com",
+            "E@email.com"
         )//,(Email("F@email.com"),(Email("G@email.com"),(Email("H@email.com"),(Email("I@email.com"),(Email("J@email.com"),(Email("K@email.com"),(Email("L@email.com"),(Email("M@email.com"),(Email("P@email.com"),(Email("O@email.com"),(Email("P@email.com"),(Email("Q@email.com"),(Email("R@email.com"),(Email("S@email.com"),(Email("T@email.com"),(Email("U@email.com"),(Email("V@email.com"),(Email("W@email.com"),(Email("X@email.com"),(Email("Y@email.com"),(Email("Z@email.com"))
         val address = mutableListOf(
-            listOf("A-homeAddress"),
-            listOf("B-homeAddress"),
-            listOf("C-homeAddress"),
-            listOf("D-homeAddress"),
-            listOf("E-homeAddress")
+            "A-homeAddress",
+            "B-homeAddress",
+            "C-homeAddress",
+            "D-homeAddress",
+            "E-homeAddress"
         )//,Address("-homeAddress"),Address("G-homeAddress"),Address("H-homeAddress"),Address("I-homeAddress"),Address("J-homeAddress"),Address("K-homeAddress"),Address("L-homeAddress"),Address("M-homeAddress"),Address("N-homeAddress"),Address("O-homeAddress"),Address("P-homeAddress"),Address("Q-homeAddress"),Address("R-homeAddress"),Address("S-homeAddress"),Address("T-homeAddress"),Address("U-homeAddress"),Address("V-homeAddress"),Address("W-homeAddress"),Address("X-homeAddress"),Address("Y-homeAddress"),Address("Z-homeAddress"))
         for (i in name.indices) {
-            addContact(name[i],phoneNumber[i],emailAddress[i],address[i])
+            val valuesForContactTable=ContentValues().apply {
+                put(contactName,name[i])
+                put(contactPhoneNumberList,phoneNumber[i])
+                put(contactEmailList,emailAddress[i])
+            }
+            val id=db.insert(contactTableName,null,valuesForContactTable)
+            val valuesForAddressTable=ContentValues().apply {
+                put(contactID,id)
+                put(contactAddress,address[i])
+            }
+            db.insert(contactAddressTableName,null,valuesForAddressTable)
         }
     }
     private fun getDisplayName(contact:Contact): String {
@@ -207,7 +218,7 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context,"DATABAS
         database?.execSQL("CREATE TABLE $contactTableName($contactID INTEGER primary key autoincrement,$contactName TEXT,$contactPhoneNumberList TEXT,$contactEmailList TEXT)")
         database?.execSQL("CREATE TABLE $contactAddressTableName($contactID INTEGER,$contactAddress TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
         if (database != null) {
-            insertInitialValues()
+            insertInitialValues(database)
         }
     }
 
