@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 
+
 class DataBase(private val context: Context) : SQLiteOpenHelper(context, contactDataBaseName,null,1) {
     companion object{
         private const val contactDataBaseName="Contact_DataBase"
@@ -20,7 +21,7 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
 
     fun getContactsList():List<Contact>{
         val contactList= mutableListOf<Contact>()
-        val cursor=context.contentResolver.query(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_CONTACT,null,null,null,null)
+        val cursor=context.contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,null,null,null,null)
         cursor?.use {cursor1->
             while (cursor1.moveToNext()){
                 val id=cursor1.getLong(cursor1.getColumnIndexOrThrow(contactID))
@@ -29,7 +30,7 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
                     contactPhoneNumberList)).split(", ") else null
                 val email=if(cursor1.getString(cursor1.getColumnIndexOrThrow(contactEmailList))!=null) cursor1.getString(cursor1.getColumnIndexOrThrow(
                     contactEmailList)).split(", ") else null
-                val cursorForAddressTable=context.contentResolver.query(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_ADDRESS,null,"$contactID = ?",
+                val cursorForAddressTable=context.contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,null,"$contactID = ?",
                     arrayOf(id.toString()),null)
                 var address: MutableList<String>? = cursorForAddressTable?.use {
                     mutableListOf<String>().apply {
@@ -54,14 +55,14 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
 
     fun getContact(id:Long):Contact?{
 
-        val cursorForContactTable=context.contentResolver.query(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_CONTACT,null,"$contactID= ?", arrayOf(id.toString()),null)
+        val cursorForContactTable=context.contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,null,"$contactID= ?", arrayOf(id.toString()),null)
         cursorForContactTable?.use {cursorForContactTable.moveToFirst()
             val name=cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(contactName))?:null
             val phoneNumber=if(cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(contactPhoneNumberList))!=null) cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(contactPhoneNumberList)).split(", ") else null
             val email=if(cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(
                     contactEmailList))!=null) cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(
                 contactEmailList)).split(", ") else null
-            val cursorForAddressTable=context.contentResolver.query(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_ADDRESS,null,"$contactID= ?",
+            val cursorForAddressTable=context.contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,null,"$contactID= ?",
                 arrayOf(id.toString()),null)
             var address: MutableList<String>? = cursorForAddressTable?.use {
                 mutableListOf<String>().apply {
@@ -89,7 +90,7 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
             put(contactPhoneNumberList,phoneNumberList?.joinToString(", "))
             put(contactEmailList,emailList?.joinToString(", "))
         }
-        val insertedUri=context.contentResolver.insert(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_CONTACT,valuesForContactTable)
+        val insertedUri=context.contentResolver.insert(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,valuesForContactTable)
         val insertedID=insertedUri?.lastPathSegment?.toLongOrNull()?:-1
         if(insertedID!=-1L){
             addressList?.forEach {
@@ -97,17 +98,17 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
                     put(contactID, insertedID)
                     put(contactAddress, it)
                 }
-                context.contentResolver.insert(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_ADDRESS,valuesForAddressTable)
+                context.contentResolver.insert(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,valuesForAddressTable)
             }
         }
         return insertedID
     }
 
     fun deleteContact(id:Long){
-        context.contentResolver.delete(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_CONTACT,"$contactID= ?",
+        context.contentResolver.delete(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,"$contactID= ?",
             arrayOf(id.toString())
         )
-        context.contentResolver.delete(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_ADDRESS,"$contactID= ?",
+        context.contentResolver.delete(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,"$contactID= ?",
             arrayOf(id.toString())
         )
     }
@@ -115,7 +116,7 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
         val contentValues=ContentValues().apply {
             put(contactName,newName)
         }
-        context.contentResolver.update(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
+        context.contentResolver.update(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
             arrayOf(id.toString())
         )
     }
@@ -123,7 +124,7 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
         val contentValues=ContentValues().apply {
             put(contactPhoneNumberList,newPhoneNumberList.joinToString(", "))
         }
-        context.contentResolver.update(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
+        context.contentResolver.update(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
             arrayOf(id.toString())
         )
     }
@@ -131,12 +132,12 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
         val contentValues=ContentValues().apply {
             put(contactEmailList,newEmailList.joinToString(", "))
         }
-        context.contentResolver.update(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
+        context.contentResolver.update(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
             arrayOf(id.toString())
         )
     }
     fun updateContactAddressList(id:Long,newAddressList:List<String>){
-        context.contentResolver.delete(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_ADDRESS,"$contactID= ?",
+        context.contentResolver.delete(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,"$contactID= ?",
             arrayOf(id.toString())
         )
         newAddressList.forEach {
@@ -144,7 +145,7 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
                 put(contactID,id)
                 put(contactAddress,it)
             }
-            context.contentResolver.insert(ContentProviderForContacts.CONTENT_URI_FOR_TABLE_ADDRESS,contentValues)
+            context.contentResolver.insert(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,contentValues)
         }
     }
     fun searchContact(searchQuery:String): List<Contact> {

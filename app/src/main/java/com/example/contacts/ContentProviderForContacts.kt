@@ -8,8 +8,6 @@ import android.net.Uri
 
 class ContentProviderForContacts: ContentProvider() {
     companion object{
-        val CONTENT_URI_FOR_TABLE_CONTACT: Uri =Uri.parse("content://${DataBaseContract.AUTHORITY}/${DataBaseContract.TABLE_CONTACT_NAME}")
-        val CONTENT_URI_FOR_TABLE_ADDRESS: Uri =Uri.parse("content://${DataBaseContract.AUTHORITY}/${DataBaseContract.TABLE_ADDRESS_NAME}")
         private val URI_MATCHER=UriMatcher(UriMatcher.NO_MATCH)
         private const val TABLE_CONTACT=1
         private const val TABLE_ADDRESS=2
