@@ -3,7 +3,6 @@ package com.example.contacts
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,6 +41,8 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
             searchQueryDuplicate=savedInstanceState.getString(searchQueryKey)
         }
     }
+
+
     private fun notifyRecyclerAdapter(){
         val list=dataBase.getContactsList()
         (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(list)
@@ -68,24 +69,18 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                Log.d("test1", "OnTextChange")
                 newText?.let { query ->
-                    val filterList = dataBase.getContactsList().filter { contact ->
-                        contact.contactName?.contains(
-                            query,
-                            ignoreCase = true
-                        ) ?: false || contact.contactPhoneNumber?.any {
-                            it.contains(query, ignoreCase = true)
-                        } ?: false || contact.contactEmail?.any { it ->
-                            it.contains(query, ignoreCase = true)
-                        } ?: false || contact.contactAddress?.any {
-                            it.contains(query, ignoreCase = true)
-                        } ?: false
+                    if (query.isNotEmpty()) {
+                        val filterList = dataBase.searchContact(query)
+                        searchQuery = query
+                        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
+                            filterList
+                        )
                     }
-                    searchQuery = query
-                    (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
-                        filterList
-                    )
+                    else{
+                        searchQuery=query
+                        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(dataBase.getContactsList())
+                    }
                 }
                 return true
             }

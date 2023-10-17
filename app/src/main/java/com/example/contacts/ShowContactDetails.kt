@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import com.example.contacts.databinding.ActivityContactDetailsBinding
 import com.example.contacts.databinding.ExtraTextViewBinding
 
@@ -77,9 +78,18 @@ class ShowContactDetails : AppCompatActivity() {
             }
             R.id.action_delete->{
                 id?.let {
-                    dataBase.deleteContact(it)
-                    setResult(RESULT_OK)
-                    finish()
+                    val alertDialog= AlertDialog.Builder(this)
+                    alertDialog.setPositiveButton(R.string.delete){_,_->
+                        dataBase.deleteContact(it)
+                        setResult(RESULT_OK)
+                        finish()
+                    }
+                    alertDialog.setNegativeButton(R.string.cancel){dialog,_->
+                        dialog.dismiss()
+                    }
+                    alertDialog.setTitle(R.string.delete)
+                    alertDialog.setMessage(R.string.delete_contact_alert_message)
+                    alertDialog.show()
                 }
 
             }

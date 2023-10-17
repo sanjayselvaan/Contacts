@@ -31,9 +31,7 @@
         <provider
             android:authorities="com.example.contacts.provider"
             android:name=".ContentProviderForContacts"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="true">
         </provider>
     </application>
-
 </manifest>

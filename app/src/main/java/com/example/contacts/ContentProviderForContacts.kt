@@ -14,8 +14,8 @@ class ContentProviderForContacts: ContentProvider() {
         private const val TABLE_CONTACT=1
         private const val TABLE_ADDRESS=2
         init {
-            URI_MATCHER.addURI(DataBaseContract.AUTHORITY, "Contact", TABLE_CONTACT)
-            URI_MATCHER.addURI(DataBaseContract.AUTHORITY, "Address", TABLE_ADDRESS)
+            URI_MATCHER.addURI(DataBaseContract.AUTHORITY, DataBaseContract.TABLE_CONTACT_NAME, TABLE_CONTACT)
+            URI_MATCHER.addURI(DataBaseContract.AUTHORITY, DataBaseContract.TABLE_ADDRESS_NAME, TABLE_ADDRESS)
         }
     }
 
@@ -25,9 +25,6 @@ class ContentProviderForContacts: ContentProvider() {
             dataBaseHelper=DataBase(it)
             return true
         }
-//        val helper=DataBase(context)
-//        dataBase=helper.writableDatabase
-//        return dataBase != null
         return false
     }
 
@@ -41,14 +38,14 @@ class ContentProviderForContacts: ContentProvider() {
         val dataBase=dataBaseHelper.readableDatabase
         return when(URI_MATCHER.match(uri)){
             TABLE_CONTACT->{
-                val cursor=dataBase.query(DataBase.contactTableName,projection,selection,selectionArgs,null,null,sortOrder)
+                val cursor=dataBase.query(DataBaseContract.TABLE_CONTACT_NAME,projection,selection,selectionArgs,null,null,sortOrder)
                 cursor?.let {
                     it.setNotificationUri(context?.contentResolver,uri)
                     it
                 }
             }
             TABLE_ADDRESS->{
-                val cursor=dataBase.query(DataBase.contactAddressTableName,projection,selection,selectionArgs,null,null,sortOrder)
+                val cursor=dataBase.query(DataBaseContract.TABLE_ADDRESS_NAME,projection,selection,selectionArgs,null,null,sortOrder)
                 cursor?.let {
                     it.setNotificationUri(context?.contentResolver,uri)
                     it
@@ -73,12 +70,12 @@ class ContentProviderForContacts: ContentProvider() {
         val dataBase=dataBaseHelper.writableDatabase
         return when(URI_MATCHER.match(uri)){
             TABLE_CONTACT->{
-                val id=dataBase.insert(DataBase.contactTableName,null,contentValues)
+                val id=dataBase.insert(DataBaseContract.TABLE_CONTACT_NAME,null,contentValues)
                 context?.contentResolver?.notifyChange(uri,null)
                 Uri.withAppendedPath(uri,id.toString())
             }
             TABLE_ADDRESS->{
-                val id=dataBase.insert(DataBase.contactAddressTableName,null,contentValues)
+                val id=dataBase.insert(DataBaseContract.TABLE_ADDRESS_NAME,null,contentValues)
                 context?.contentResolver?.notifyChange(uri,null)
                 Uri.withAppendedPath(uri,id.toString())
             }
@@ -94,13 +91,13 @@ class ContentProviderForContacts: ContentProvider() {
         val dataBase=dataBaseHelper.writableDatabase
         return when(URI_MATCHER.match(uri)){
             TABLE_CONTACT->{
-                val count=dataBase.delete(DataBase.contactTableName,selection,selectionArgs)
+                val count=dataBase.delete(DataBaseContract.TABLE_CONTACT_NAME,selection,selectionArgs)
                 context?.contentResolver?.notifyChange(uri,null)
                 count
 
             }
             TABLE_ADDRESS->{
-                val count=dataBase.delete(DataBase.contactAddressTableName,selection,selectionArgs)
+                val count=dataBase.delete(DataBaseContract.TABLE_ADDRESS_NAME,selection,selectionArgs)
                 context?.contentResolver?.notifyChange(uri,null)
                 count
 
@@ -115,12 +112,12 @@ class ContentProviderForContacts: ContentProvider() {
         val dataBase=dataBaseHelper.writableDatabase
         return when(URI_MATCHER.match(uri)){
             TABLE_CONTACT->{
-                val count=dataBase.update(DataBase.contactTableName,contentValues,selection,selectionArgs)
+                val count=dataBase.update(DataBaseContract.TABLE_CONTACT_NAME,contentValues,selection,selectionArgs)
                 context?.contentResolver?.notifyChange(uri,null)
                 count
             }
             TABLE_ADDRESS->{
-                val count=dataBase.update(DataBase.contactAddressTableName,contentValues,selection,selectionArgs)
+                val count=dataBase.update(DataBaseContract.TABLE_ADDRESS_NAME,contentValues,selection,selectionArgs)
                 context?.contentResolver?.notifyChange(uri,null)
                 count
             }

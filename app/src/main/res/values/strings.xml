@@ -29,4 +29,5 @@
     <string name="ok">OK</string>
     <string name="leave">Leave</string>
     <string name="search">Search</string>
+    <string name="delete_contact_alert_message">This contact will be permanently deleted from your device</string>
 </resources>
