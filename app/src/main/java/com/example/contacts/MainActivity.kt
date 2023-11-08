@@ -7,63 +7,83 @@ import android.view.Menu
 import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.contacts.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
-    private lateinit var binding:ActivityMainBinding
-    private var searchQuery:String?=null
-    private var searchQueryDuplicate:String?=null
-    private lateinit var dataBase: DataBase
+
+class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
+    private lateinit var binding: ActivityMainBinding
+    private var searchQuery: String? = null
+    private var searchQueryDuplicate: String? = null
+    private lateinit var dataBaseHelper: DataBaseHelper
     private val fetchResultFromAddContactActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                notifyRecyclerAdapter()
+                lifecycleScope.launch { notifyRecyclerAdapter() }
             }
         }
-    override fun onCreate(savedInstanceState: Bundle?){
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.title=getString(R.string.app_name)
-        binding= ActivityMainBinding.inflate(layoutInflater)
+        supportActionBar?.title = getString(R.string.app_name)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dataBase= DataBase(this)
-        binding.recyclerView.layoutManager= LinearLayoutManager(this)
-        binding.recyclerView.adapter=ContactsListRecyclerViewAdapter(this)
-        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(dataBase.getContactsList())
-        val dividerItem= DividerItemDecoration(this,LinearLayoutManager.VERTICAL)
+        dataBaseHelper = DataBaseHelper(contentResolver)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = ContactsListRecyclerViewAdapter(this)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val contactList = dataBaseHelper.getContactsList()
+            withContext(Dispatchers.Main) {
+                (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
+                    contactList
+                )
+            }
+        }
+        val dividerItem = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         binding.recyclerView.addItemDecoration(dividerItem)
         binding.fab.setOnClickListener {
-            val intent= Intent(this,AddContact::class.java)
+            val intent = Intent(this, AddContact::class.java)
             fetchResultFromAddContactActivity.launch(intent)
         }
-        if (savedInstanceState!=null){
-            searchQueryDuplicate=savedInstanceState.getString(searchQueryKey)
+        if (savedInstanceState != null) {
+            searchQueryDuplicate = savedInstanceState.getString(searchQueryKey)
         }
     }
 
-
-    private fun notifyRecyclerAdapter(){
-        val list=dataBase.getContactsList()
-        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(list)
+    private suspend fun notifyRecyclerAdapter() {
+        lifecycleScope.launch {
+            val contactList = withContext(Dispatchers.IO) { dataBaseHelper.getContactsList() }
+            withContext(Dispatchers.Main) {
+                (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
+                    contactList
+                )
+            }
+        }
     }
+
     override fun itemOnClick(id: Long) {
-        val intent= Intent(this,ShowContactDetails::class.java)
-        intent.putExtra(idOfDataItem,id)
+        val intent = Intent(this, ShowContactDetails::class.java)
+        intent.putExtra(idOfDataItem, id)
         fetchResultFromAddContactActivity.launch(intent)
     }
-    companion object{
-        const val idOfDataItem="position_of_data_item"
-        const val searchQueryKey="search_query"
+
+    companion object {
+        const val idOfDataItem = "position_of_data_item"
+        const val searchQueryKey = "search_query"
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu,menu)
-        val searchItem=menu?.findItem(R.id.action_search)
-        val searchView=searchItem?.actionView as SearchView
-        searchView.imeOptions= EditorInfo.IME_FLAG_NO_EXTRACT_UI
-        searchView.maxWidth= Int.MAX_VALUE
-        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+        menuInflater.inflate(R.menu.main_menu, menu)
+        val searchItem = menu?.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+        searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
+        searchView.maxWidth = Int.MAX_VALUE
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -71,35 +91,47 @@ class MainActivity : AppCompatActivity(),RecyclerItemClickListener{
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText?.let { query ->
                     if (query.isNotEmpty()) {
-                        val filterList = dataBase.searchContact(query)
+                        lifecycleScope.launch {
+                            val filterList =
+                                withContext(Dispatchers.IO) { dataBaseHelper.searchContact(query) }
+                            withContext(Dispatchers.Main) {
+                                (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
+                                    filterList
+                                )
+                            }
+                        }
                         searchQuery = query
-                        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
-                            filterList
-                        )
-                    }
-                    else{
-                        searchQuery=query
-                        (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(dataBase.getContactsList())
+
+                    } else {
+                        lifecycleScope.launch {
+                            val list =
+                                withContext(Dispatchers.IO) { dataBaseHelper.getContactsList() }
+                            withContext(Dispatchers.Main) {
+                                (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
+                                    list
+                                )
+                            }
+                        }
+                        searchQuery = query
                     }
                 }
                 return true
             }
         })
-        if (searchQueryDuplicate!=null){
+        if (searchQueryDuplicate != null) {
             searchItem.expandActionView()
-            searchView.setQuery(searchQueryDuplicate,true)
-            searchQueryDuplicate=null
+            searchView.setQuery(searchQueryDuplicate, true)
+            searchQueryDuplicate = null
         }
         return true
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (searchQuery!=null){
-            outState.putString(searchQueryKey,searchQuery)
+        if (searchQuery != null) {
+            outState.putString(searchQueryKey, searchQuery)
         }
     }
-
 
 
 }

@@ -15,23 +15,25 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.forEach
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.contacts.databinding.ActivityAddContactBinding
 import com.example.contacts.databinding.ExtraInputViewBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.*
 
 
 class AddContact : AppCompatActivity() {
     private lateinit var backPressed: OnBackPressedCallback
     private lateinit var binding: ActivityAddContactBinding
     private lateinit var addContactsViewModel: AddContactsViewModel
-    private lateinit var dataBase:DataBase
+    private lateinit var dataBaseHelper:DataBaseHelper
     private var exitAlertDialogVisibility:Boolean=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dataBase= DataBase(this)
+        dataBaseHelper= DataBaseHelper(contentResolver)
         supportActionBar?.title = getString(R.string.add_contact)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         addContactsViewModel = ViewModelProvider(this)[AddContactsViewModel::class.java]
@@ -88,7 +90,6 @@ class AddContact : AppCompatActivity() {
         var phoneNumberList: List<String>?
         var emailList: List<String>?
         var addressList: List<String>?
-        val newId:Long
         val alertDialog=AlertDialog.Builder(this)
         if (checkForPhoneNumberValidation(
                 binding.phoneNumberLinearLayout.id,
@@ -131,33 +132,27 @@ class AddContact : AppCompatActivity() {
                 addressList = null
             }
             if (!newContactName.isNullOrEmpty()||!newContactName.isNullOrBlank() || !phoneNumberList.isNullOrEmpty() || !emailList.isNullOrEmpty() || !addressList.isNullOrEmpty()) {
-                newId=dataBase.addContact(newContactName, phoneNumberList, emailList, addressList)
-                setResult(RESULT_OK)
-                val toastText = when {
-                    newContactName?.isNotBlank() == true -> {
-                        newContactName
-                    }
-
-                    phoneNumberList?.isNotEmpty() == true -> {
-                        phoneNumberList[0]
-                    }
-
-                    emailList?.isNotEmpty() == true -> {
-                        emailList[0]
-                    }
-
-                    else -> {
-                        null
+                 lifecycleScope.launch {
+                     val context=this@AddContact
+                    val newId = withContext(Dispatchers.IO) {dataBaseHelper.addContact(newContactName, phoneNumberList, emailList, addressList)}
+                    withContext(Dispatchers.Main){
+                        val intentForShowDetails = Intent(context, ShowContactDetails::class.java)
+                        intentForShowDetails.putExtra(MainActivity.idOfDataItem, newId)
+                        startActivity(intentForShowDetails)
+                        setResult(RESULT_OK)
+                        val toastText = when {
+                            newContactName?.isNotBlank() == true -> newContactName
+                            phoneNumberList?.isNotEmpty() == true -> phoneNumberList[0]
+                            emailList?.isNotEmpty() == true -> emailList[0]
+                            else -> null
+                        }
+                        toastText?.let {
+                            Toast.makeText(context, "$it ${getString(R.string.is_saved)}", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        finish()
                     }
                 }
-                toastText?.let {
-                    Toast.makeText(this, "$it ${getString(R.string.is_saved)}", Toast.LENGTH_SHORT)
-                        .show()
-                }
-                val intentForShowDetails = Intent(this, ShowContactDetails::class.java)
-                intentForShowDetails.putExtra(MainActivity.idOfDataItem, newId)
-                startActivity(intentForShowDetails)
-                finish()
             } else {
                 alertDialog.setMessage(getString(R.string.nothing_to_save))
                 alertDialog.setPositiveButton(getString(R.string.ok)) { _, _ ->

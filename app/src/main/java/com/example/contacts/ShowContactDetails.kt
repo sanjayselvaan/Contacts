@@ -8,14 +8,19 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import com.example.contacts.databinding.ActivityContactDetailsBinding
 import com.example.contacts.databinding.ExtraTextViewBinding
+import kotlinx.coroutines.Dispatchers
+
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ShowContactDetails : AppCompatActivity() {
     private lateinit var binding: ActivityContactDetailsBinding
     private lateinit var backPressed: OnBackPressedCallback
-    private lateinit var dataBase:DataBase
-    private var deleteAlertVisibility=false
+    private lateinit var dataBaseHelper: DataBaseHelper
+    private var deleteAlertVisibility = false
     private lateinit var alertDialog: AlertDialog.Builder
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,34 +29,68 @@ class ShowContactDetails : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding = ActivityContactDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dataBase=DataBase(this)
+        dataBaseHelper = DataBaseHelper(contentResolver)
         val id = intent.getLongExtra(MainActivity.idOfDataItem, 0)
-        val contactItem=dataBase.getContact(id)
-        val contactName = contactItem?.contactName
-        val contactNumber = contactItem?.contactPhoneNumber
-        val contactEmail = contactItem?.contactEmail
-        val contactAddress = contactItem?.contactAddress
-        alertDialog= AlertDialog.Builder(this)
-        alertDialog.setPositiveButton(R.string.delete){_,_->
-            dataBase.deleteContact(id)
-            setResult(RESULT_OK)
-            finish()
+        lifecycleScope.launch(Dispatchers.IO) {
+            dataBaseHelper.getContact(id)?.let {
+                withContext(Dispatchers.Main){
+                    setUpViewForContactDetails(it)
+                }
+            }
         }
-        alertDialog.setNegativeButton(R.string.cancel){dialog,_->
+        alertDialog = AlertDialog.Builder(this)
+        alertDialog.setPositiveButton(R.string.delete) { _, _ ->
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) { dataBaseHelper.deleteContact(id) }
+                withContext(Dispatchers.Main) {
+                    setResult(RESULT_OK)
+                    finish()
+                }
+            }
+        }
+        alertDialog.setNegativeButton(R.string.cancel) { dialog, _ ->
             dialog.dismiss()
-            deleteAlertVisibility=false
+            deleteAlertVisibility = false
         }
         alertDialog.setTitle(R.string.delete)
         alertDialog.setMessage(R.string.delete_contact_alert_message)
+
+        backPressed = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finish()
+            }
+        }
+        if (savedInstanceState != null) {
+            deleteAlertVisibility = savedInstanceState.getBoolean(deleteAlertKey)
+        }
+        if (deleteAlertVisibility) {
+            alertDialog.show()
+        }
+        alertDialog.setOnCancelListener {
+            deleteAlertVisibility = false
+        }
+    }
+
+
+    private fun setUpViewForContactDetails(contactItem: Contact) {
+        Log.d("test1","set up view is running on this thread called = ${Thread.currentThread().name}")
+        val contactName = contactItem.contactName
+        val contactNumber = contactItem.contactPhoneNumber
+        val contactEmail = contactItem.contactEmail
+        val contactAddress = contactItem.contactAddress
         contactName?.let {
-            binding.nameLayout.visibility=View.VISIBLE
+            binding.nameLayout.visibility = View.VISIBLE
             binding.nameTextView.text = it
         }
         contactNumber?.let {
             if (it.isNotEmpty()) {
                 binding.phoneNumberLayout.visibility = View.VISIBLE
-                it.forEach {  text->
-                    val extraTextViewBinding =ExtraTextViewBinding.inflate(layoutInflater,binding.contactPhoneNumberLinearLayout,false)
+                it.forEach { text ->
+                    val extraTextViewBinding = ExtraTextViewBinding.inflate(
+                        layoutInflater,
+                        binding.contactPhoneNumberLinearLayout,
+                        false
+                    )
                     extraTextViewBinding.extraTextView.text = text
                     binding.contactPhoneNumberLinearLayout.addView(extraTextViewBinding.root)
                 }
@@ -60,8 +99,12 @@ class ShowContactDetails : AppCompatActivity() {
         contactEmail?.let {
             if (it.isNotEmpty()) {
                 binding.emailLayout.visibility = View.VISIBLE
-                it.forEach{text->
-                    val extraTextViewBinding =ExtraTextViewBinding.inflate(layoutInflater,binding.contactEmailLinearLayout,false)
+                it.forEach { text ->
+                    val extraTextViewBinding = ExtraTextViewBinding.inflate(
+                        layoutInflater,
+                        binding.contactEmailLinearLayout,
+                        false
+                    )
                     extraTextViewBinding.extraTextView.text = text
                     binding.contactEmailLinearLayout.addView(extraTextViewBinding.root)
                 }
@@ -70,30 +113,18 @@ class ShowContactDetails : AppCompatActivity() {
         contactAddress?.let {
             if (it.isNotEmpty()) {
                 binding.addressLayout.visibility = View.VISIBLE
-                it.forEach{text->
+                it.forEach { text ->
                     val extraTextViewBinding =
-                        ExtraTextViewBinding.inflate(layoutInflater,binding.contactAddressLinearLayout,false)
+                        ExtraTextViewBinding.inflate(
+                            layoutInflater,
+                            binding.contactAddressLinearLayout,
+                            false
+                        )
                     extraTextViewBinding.extraTextView.text = text
                     binding.contactAddressLinearLayout.addView(extraTextViewBinding.root)
                 }
             }
         }
-        backPressed = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                finish()
-            }
-        }
-        if (savedInstanceState!=null){
-            deleteAlertVisibility=savedInstanceState.getBoolean(deleteAlertKey)
-        }
-        if (deleteAlertVisibility){
-            alertDialog.show()
-        }
-        alertDialog.setOnCancelListener {
-            Log.d("test1","dimiss")
-            deleteAlertVisibility=false
-        }
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -102,9 +133,10 @@ class ShowContactDetails : AppCompatActivity() {
                 backPressed.handleOnBackPressed()
                 return true
             }
-            R.id.action_delete->{
+
+            R.id.action_delete -> {
                 alertDialog.show()
-                deleteAlertVisibility=true
+                deleteAlertVisibility = true
             }
         }
         return super.onOptionsItemSelected(item)
@@ -112,16 +144,16 @@ class ShowContactDetails : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.show_contact_details_menu,menu)
+        menuInflater.inflate(R.menu.show_contact_details_menu, menu)
         return true
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(deleteAlertKey,deleteAlertVisibility)
+        outState.putBoolean(deleteAlertKey, deleteAlertVisibility)
     }
 
-    companion object{
-        private const val deleteAlertKey="delete_alert_key"
+    companion object {
+        private const val deleteAlertKey = "delete_alert_key"
     }
 }

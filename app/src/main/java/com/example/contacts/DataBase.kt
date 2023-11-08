@@ -4,163 +4,27 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 
-
-class DataBase(private val context: Context) : SQLiteOpenHelper(context, contactDataBaseName,null,1) {
+class DataBase(context: Context) : SQLiteOpenHelper(context, contactDataBaseName,null, contactDataBaseVersion) {
     companion object{
         private const val contactDataBaseName="Contact_DataBase"
         private const val contactTableName="Contact"
-        private const val contactAddressTableName="Address"
-        private const val contactID="_id"
+        private const val phoneTableName="Phone_Number"
+        private const val emailTableName="Email"
+        private const val addressTableName="Address"
+        private const val contactID="contactID"
+        private const val phoneNumberId="phoneNumberId"
+        private const val emailId="emailId"
+        private const val addressId="addressId"
         private const val contactName="Contact_Name"
-        private const val contactPhoneNumberList="Phone_Number"
-        private const val contactEmailList="Email"
+        private const val contactPhoneNumber="Phone_Number"
+        private const val contactEmail="Email"
         private const val contactAddress="Address"
-    }
-
-    fun getContactsList():List<Contact>{
-        val contactList= mutableListOf<Contact>()
-        val cursor=context.contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,null,null,null,null)
-        cursor?.use {cursor1->
-            while (cursor1.moveToNext()){
-                val id=cursor1.getLong(cursor1.getColumnIndexOrThrow(contactID))
-                val name=cursor1.getString(cursor1.getColumnIndexOrThrow(contactName))
-                val phoneNumber=if(cursor1.getString(cursor1.getColumnIndexOrThrow(contactPhoneNumberList))!=null) cursor1.getString(cursor1.getColumnIndexOrThrow(
-                    contactPhoneNumberList)).split(", ") else null
-                val email=if(cursor1.getString(cursor1.getColumnIndexOrThrow(contactEmailList))!=null) cursor1.getString(cursor1.getColumnIndexOrThrow(
-                    contactEmailList)).split(", ") else null
-                val cursorForAddressTable=context.contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,null,"$contactID = ?",
-                    arrayOf(id.toString()),null)
-                var address: MutableList<String>? = cursorForAddressTable?.use {
-                    mutableListOf<String>().apply {
-                        while (cursorForAddressTable.moveToNext()) {
-                            cursorForAddressTable.getString(cursorForAddressTable.getColumnIndexOrThrow(contactAddress))?.let {
-                                add(it)
-                            }
-                        }
-                    }
-                }
-                address?.let {
-                    if (it.isEmpty()){
-                        address=null
-                    }
-                }
-                contactList.add(Contact(id,name,phoneNumber,email,address))
-            }
-
-        }
-        return contactList.sortedBy { getDisplayName(it) }
-    }
-
-    fun getContact(id:Long):Contact?{
-
-        val cursorForContactTable=context.contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,null,"$contactID= ?", arrayOf(id.toString()),null)
-        cursorForContactTable?.use {cursorForContactTable.moveToFirst()
-            val name=cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(contactName))?:null
-            val phoneNumber=if(cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(contactPhoneNumberList))!=null) cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(contactPhoneNumberList)).split(", ") else null
-            val email=if(cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(
-                    contactEmailList))!=null) cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(
-                contactEmailList)).split(", ") else null
-            val cursorForAddressTable=context.contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,null,"$contactID= ?",
-                arrayOf(id.toString()),null)
-            var address: MutableList<String>? = cursorForAddressTable?.use {
-                mutableListOf<String>().apply {
-                    while (cursorForAddressTable.moveToNext()) {
-                        cursorForAddressTable.getString(cursorForAddressTable.getColumnIndexOrThrow(contactAddress))?.let {
-                            add(it)
-                        }
-                    }
-                }
-            }
-            address?.let {
-                if (it.isEmpty()){
-                    address=null
-                }
-            }
-            return Contact(id,name,phoneNumber,email,address)
-        }
-       return null
-    }
-
-
-    fun addContact(name:String?,phoneNumberList:List<String>?,emailList:List<String>?,addressList:List<String>?): Long {
-        val valuesForContactTable=ContentValues().apply {
-            put(contactName,name)
-            put(contactPhoneNumberList,phoneNumberList?.joinToString(", "))
-            put(contactEmailList,emailList?.joinToString(", "))
-        }
-        val insertedUri=context.contentResolver.insert(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,valuesForContactTable)
-        val insertedID=insertedUri?.lastPathSegment?.toLongOrNull()?:-1
-        if(insertedID!=-1L){
-            addressList?.forEach {
-                val valuesForAddressTable = ContentValues().apply {
-                    put(contactID, insertedID)
-                    put(contactAddress, it)
-                }
-                context.contentResolver.insert(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,valuesForAddressTable)
-            }
-        }
-        return insertedID
-    }
-
-    fun deleteContact(id:Long){
-        context.contentResolver.delete(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,"$contactID= ?",
-            arrayOf(id.toString())
-        )
-        context.contentResolver.delete(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,"$contactID= ?",
-            arrayOf(id.toString())
-        )
-    }
-    fun updateContactName(id:Long,newName:String){
-        val contentValues=ContentValues().apply {
-            put(contactName,newName)
-        }
-        context.contentResolver.update(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
-            arrayOf(id.toString())
-        )
-    }
-    fun updateContactPhoneNumberList(id:Long,newPhoneNumberList:List<String>){
-        val contentValues=ContentValues().apply {
-            put(contactPhoneNumberList,newPhoneNumberList.joinToString(", "))
-        }
-        context.contentResolver.update(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
-            arrayOf(id.toString())
-        )
-    }
-    fun updateContactEmailList(id:Long,newEmailList:List<String>){
-        val contentValues=ContentValues().apply {
-            put(contactEmailList,newEmailList.joinToString(", "))
-        }
-        context.contentResolver.update(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,contentValues,"$contactID= ?",
-            arrayOf(id.toString())
-        )
-    }
-    fun updateContactAddressList(id:Long,newAddressList:List<String>){
-        context.contentResolver.delete(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,"$contactID= ?",
-            arrayOf(id.toString())
-        )
-        newAddressList.forEach {
-            val contentValues=ContentValues().apply {
-                put(contactID,id)
-                put(contactAddress,it)
-            }
-            context.contentResolver.insert(DataBaseContract.CONTENT_URI_FOR_TABLE_ADDRESS,contentValues)
-        }
-    }
-    fun searchContact(searchQuery:String): List<Contact> {
-        val contactList= mutableListOf<Contact>()
-        val dataBase=readableDatabase
-        val cursor=dataBase.rawQuery("SELECT DISTINCT c.$contactID FROM $contactTableName c LEFT JOIN $contactAddressTableName a ON c.$contactID = a.$contactID WHERE c.$contactName LIKE ? OR c.$contactPhoneNumberList LIKE ? OR c.$contactEmailList LIKE ? OR a.$contactAddress LIKE ?",
-            arrayOf("%$searchQuery%","%$searchQuery%","%$searchQuery%","%$searchQuery"))
-        cursor?.use {
-            while (cursor.moveToNext()){
-                getContact(cursor.getLong(cursor.getColumnIndexOrThrow(contactID)))?.let {contact->
-                    contactList.add(contact)
-                }
-            }
-        }
-        return contactList
+        private const val tableDummy="dummy"
+        private const val tableAddressDummy="dummyAddress"
+        private const val contactDataBaseVersion=2
     }
 
     private fun insertInitialValues(db:SQLiteDatabase){
@@ -195,38 +59,111 @@ class DataBase(private val context: Context) : SQLiteOpenHelper(context, contact
         for (i in name.indices) {
             val valuesForContactTable=ContentValues().apply {
                 put(contactName,name[i])
-                put(contactPhoneNumberList,phoneNumber[i])
-                put(contactEmailList,emailAddress[i])
             }
             val id=db.insert(contactTableName,null,valuesForContactTable)
+            val valuesForPhoneTable=ContentValues().apply {
+                put(contactID,id)
+                put(contactPhoneNumber,phoneNumber[i])
+            }
+            db.insert(phoneTableName,null,valuesForPhoneTable)
+            val valuesForEmailTable=ContentValues().apply {
+                put(contactID,id)
+                put(contactEmail,emailAddress[i])
+            }
+            db.insert(emailTableName,null,valuesForEmailTable)
             val valuesForAddressTable=ContentValues().apply {
                 put(contactID,id)
                 put(contactAddress,address[i])
             }
-            db.insert(contactAddressTableName,null,valuesForAddressTable)
-        }
-    }
-    private fun getDisplayName(contact:Contact): String {
-        return when{
-            contact.contactName!=null-> contact.contactName
-            contact.contactPhoneNumber!=null-> contact.contactPhoneNumber.first()
-            contact.contactEmail!=null-> contact.contactEmail.first()
-            else->""
+            db.insert(addressTableName,null,valuesForAddressTable)
         }
     }
 
     override fun onCreate(database: SQLiteDatabase?) {
-        database?.execSQL("CREATE TABLE $contactTableName($contactID INTEGER primary key autoincrement,$contactName TEXT,$contactPhoneNumberList TEXT,$contactEmailList TEXT)")
-        database?.execSQL("CREATE TABLE $contactAddressTableName($contactID INTEGER,$contactAddress TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+        database?.execSQL("CREATE TABLE $contactTableName($contactID INTEGER primary key autoincrement,$contactName TEXT)")
+        database?.execSQL("CREATE TABLE $phoneTableName($phoneNumberId INTEGER primary key autoincrement,$contactID INTEGER,$contactPhoneNumber INTEGER,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+        database?.execSQL("CREATE TABLE $emailTableName($emailId INTEGER primary key autoincrement,$contactID INTEGER,$contactEmail TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+        database?.execSQL("CREATE TABLE $addressTableName($addressId INTEGER primary key autoincrement,$contactID INTEGER,$contactAddress TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
         if (database != null) {
             insertInitialValues(database)
         }
     }
 
     override fun onUpgrade(database: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        database?.execSQL("DROP TABLE IF EXISTS $contactTableName")
-        database?.execSQL("DROP TABLE IF EXISTS $contactAddressTableName")
-        onCreate(database)
+        Log.d("test1","the thread in on upgrade is : ${Thread.currentThread().name}")
+        println("Migration: inside on upgrade triggered")
+        Log.d("test1","onUpgrade outside if")
+        if(oldVersion<2){
+            println("Migration: inside new version 2")
+            Log.d("test1","onUpgrade inside if")
+            database?.execSQL("ALTER TABLE $addressTableName RENAME COLUMN _id TO $contactID")
+            database?.execSQL("CREATE TABLE $tableDummy ($contactID INTEGER primary key autoincrement,$contactName TEXT)")
+            database?.execSQL("CREATE TABLE $tableAddressDummy($addressId INTEGER primary key autoincrement,$contactID INTEGER,$contactAddress TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+            database?.execSQL("CREATE TABLE $phoneTableName($phoneNumberId INTEGER primary key autoincrement,$contactID INTEGER,$contactPhoneNumber INTEGER,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+            database?.execSQL("CREATE TABLE $emailTableName($emailId INTEGER primary key autoincrement,$contactID INTEGER,$contactEmail TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+            val cursor=database?.query(contactTableName,null,null,null,null,null,null)
+            cursor?.use {
+                while (cursor.moveToNext()){
+                    val id = cursor.getString(cursor.getColumnIndexOrThrow("_id"))
+                    val name=if(cursor.getString(cursor.getColumnIndexOrThrow(contactName))!=null) cursor.getString(cursor.getColumnIndexOrThrow(contactName)) else null
+                    val contentValuesForContactTable=ContentValues().apply {
+                        put(contactID,id)
+                        put(contactName,name)
+                    }
+                    database.insert(tableDummy,null,contentValuesForContactTable)
+                    val phoneNumber =
+                        if (cursor.getString(cursor.getColumnIndexOrThrow(contactPhoneNumber)) != null) cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                contactPhoneNumber
+                            )
+                        ).split(", ") else null
+                    val email =
+                        if (cursor.getString(cursor.getColumnIndexOrThrow(contactEmail)) != null) cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                contactEmail
+                            )
+                        ).split(", ") else null
+                    phoneNumber?.let {
+                        it.forEach {
+                            val contentValues=ContentValues().apply {
+                                put(contactID,id)
+                                put(contactPhoneNumber,it)
+                            }
+                            database.insert(phoneTableName,null,contentValues)
+                        }
+                    }
+                    email?.let {
+                        it.forEach {
+                            val contentValues=ContentValues().apply {
+                                put(contactID,id)
+                                put(contactEmail,it)
+                            }
+                            database.insert(emailTableName,null,contentValues)
+                        }
+                    }
+                    val cursorForAddress = database.query(addressTableName, arrayOf(contactAddress),"$contactID = ?",
+                        arrayOf(id.toString()),null,null,null)
+                    cursorForAddress?.use {
+                        while (cursorForAddress.moveToNext()){
+                            val address=cursorForAddress.getString(cursorForAddress.getColumnIndexOrThrow(
+                                contactAddress))
+                            val contentValues=ContentValues().apply {
+                                put(contactID,id)
+                                put(contactAddress,address)
+                            }
+                            database.insert(tableAddressDummy,null,contentValues)
+                        }
+                    }
+                }
+            }
+            database?.execSQL("DROP TABLE IF EXISTS $contactTableName")
+            database?.execSQL("DROP TABLE IF EXISTS $addressTableName")
+            database?.execSQL("ALTER TABLE $tableAddressDummy RENAME TO $addressTableName")
+            database?.execSQL("ALTER TABLE $tableDummy RENAME TO $contactTableName")
+            Log.d("test1","finish of the migration")
+            println("Migration: inside migration completed")
+        }
+
     }
 
 
