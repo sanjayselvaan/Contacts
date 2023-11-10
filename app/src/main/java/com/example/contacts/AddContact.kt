@@ -134,24 +134,21 @@ class AddContact : AppCompatActivity() {
             if (!newContactName.isNullOrEmpty()||!newContactName.isNullOrBlank() || !phoneNumberList.isNullOrEmpty() || !emailList.isNullOrEmpty() || !addressList.isNullOrEmpty()) {
                  lifecycleScope.launch {
                      val context=this@AddContact
-                    val newId = withContext(Dispatchers.IO) {dataBaseHelper.addContact(newContactName, phoneNumberList, emailList, addressList)}
-                    withContext(Dispatchers.Main){
-                        val intentForShowDetails = Intent(context, ShowContactDetails::class.java)
-                        intentForShowDetails.putExtra(MainActivity.idOfDataItem, newId)
-                        startActivity(intentForShowDetails)
-                        setResult(RESULT_OK)
-                        val toastText = when {
-                            newContactName?.isNotBlank() == true -> newContactName
-                            phoneNumberList?.isNotEmpty() == true -> phoneNumberList[0]
-                            emailList?.isNotEmpty() == true -> emailList[0]
-                            else -> null
-                        }
-                        toastText?.let {
-                            Toast.makeText(context, "$it ${getString(R.string.is_saved)}", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                        finish()
-                    }
+                     val newId = dataBaseHelper.addContact(newContactName, phoneNumberList, emailList, addressList)
+                     val intentForShowDetails = Intent(context, ShowContactDetails::class.java)
+                     intentForShowDetails.putExtra(MainActivity.idOfDataItem, newId)
+                     startActivity(intentForShowDetails)
+                     setResult(RESULT_OK)
+                     val toastText = when {
+                         newContactName?.isNotBlank() == true -> newContactName
+                         phoneNumberList?.isNotEmpty() == true -> phoneNumberList[0]
+                         emailList?.isNotEmpty() == true -> emailList[0]
+                         else -> null
+                     }
+                     toastText?.let {
+                         Toast.makeText(context, "$it ${getString(R.string.is_saved)}", Toast.LENGTH_SHORT).show()
+                     }
+                     finish()
                 }
             } else {
                 alertDialog.setMessage(getString(R.string.nothing_to_save))

@@ -11,10 +11,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.example.contacts.databinding.ActivityContactDetailsBinding
 import com.example.contacts.databinding.ExtraTextViewBinding
-import kotlinx.coroutines.Dispatchers
-
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 class ShowContactDetails : AppCompatActivity() {
     private lateinit var binding: ActivityContactDetailsBinding
@@ -31,21 +29,17 @@ class ShowContactDetails : AppCompatActivity() {
         setContentView(binding.root)
         dataBaseHelper = DataBaseHelper(contentResolver)
         val id = intent.getLongExtra(MainActivity.idOfDataItem, 0)
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch{
             dataBaseHelper.getContact(id)?.let {
-                withContext(Dispatchers.Main){
-                    setUpViewForContactDetails(it)
-                }
+                setUpViewForContactDetails(it)
             }
         }
         alertDialog = AlertDialog.Builder(this)
         alertDialog.setPositiveButton(R.string.delete) { _, _ ->
             lifecycleScope.launch {
-                withContext(Dispatchers.IO) { dataBaseHelper.deleteContact(id) }
-                withContext(Dispatchers.Main) {
-                    setResult(RESULT_OK)
-                    finish()
-                }
+                dataBaseHelper.deleteContact(id)
+                setResult(RESULT_OK)
+                finish()
             }
         }
         alertDialog.setNegativeButton(R.string.cancel) { dialog, _ ->

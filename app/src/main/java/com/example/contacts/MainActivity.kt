@@ -3,6 +3,7 @@ package com.example.contacts
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,9 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.contacts.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 
 class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
@@ -36,13 +36,11 @@ class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
         dataBaseHelper = DataBaseHelper(contentResolver)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = ContactsListRecyclerViewAdapter(this)
-        lifecycleScope.launch(Dispatchers.IO) {
+
+        lifecycleScope.launch{
+            Log.d("threadName","Thread name in main activity is ${Thread.currentThread().name}")
             val contactList = dataBaseHelper.getContactsList()
-            withContext(Dispatchers.Main) {
-                (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
-                    contactList
-                )
-            }
+            (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(contactList)
         }
         val dividerItem = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         binding.recyclerView.addItemDecoration(dividerItem)
@@ -57,12 +55,8 @@ class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
 
     private suspend fun notifyRecyclerAdapter() {
         lifecycleScope.launch {
-            val contactList = withContext(Dispatchers.IO) { dataBaseHelper.getContactsList() }
-            withContext(Dispatchers.Main) {
-                (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
-                    contactList
-                )
-            }
+            val contactList = dataBaseHelper.getContactsList()
+            (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(contactList)
         }
     }
 
@@ -92,25 +86,15 @@ class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
                 newText?.let { query ->
                     if (query.isNotEmpty()) {
                         lifecycleScope.launch {
-                            val filterList =
-                                withContext(Dispatchers.IO) { dataBaseHelper.searchContact(query) }
-                            withContext(Dispatchers.Main) {
-                                (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
-                                    filterList
-                                )
-                            }
+                            val filterList = dataBaseHelper.searchContact(query)
+                            (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(filterList)
                         }
                         searchQuery = query
 
                     } else {
                         lifecycleScope.launch {
-                            val list =
-                                withContext(Dispatchers.IO) { dataBaseHelper.getContactsList() }
-                            withContext(Dispatchers.Main) {
-                                (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(
-                                    list
-                                )
-                            }
+                            val list = dataBaseHelper.getContactsList()
+                            (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(list)
                         }
                         searchQuery = query
                     }

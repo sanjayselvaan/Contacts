@@ -4,13 +4,10 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.util.Log
 
 class ContentProviderForContacts: ContentProvider() {
-    private lateinit var read: SQLiteDatabase
-    private lateinit var write:SQLiteDatabase
     companion object{
         private val URI_MATCHER=UriMatcher(UriMatcher.NO_MATCH)
         private const val TABLE_CONTACT=1
@@ -31,9 +28,7 @@ class ContentProviderForContacts: ContentProvider() {
     override fun onCreate(): Boolean {
         context?.let {
             dataBaseHelper=DataBase(it)
-            read = dataBaseHelper.readableDatabase
-            write = dataBaseHelper.writableDatabase
-            Log.d("test1","the thread is : ${Thread.currentThread().name}")
+            Log.d("test1","the thread in content provider on create : ${Thread.currentThread().name}")
             return true
         }
         return false
@@ -46,13 +41,18 @@ class ContentProviderForContacts: ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
-        Log.d("test1","the thread in on query is : ${Thread.currentThread().name}")
-        val dataBase=read
+        Log.d("test1","the thread in on content provider query is : ${Thread.currentThread().name}")
+        val dataBase= dataBaseHelper.readableDatabase
         return when(URI_MATCHER.match(uri)){
             TABLE_CONTACT->{
-                Log.d("test1","cursor being $$$ from CONTENT RESOLVER")
                 val cursor=dataBase.query(DataBaseContract.TABLE_CONTACT_NAME,projection,selection,selectionArgs,null,null,sortOrder)
+                val cursorFirst=dataBase.query(DataBaseContract.TABLE_PHONE_NAME,null,null,null,null,null,null)
+                cursorFirst.moveToFirst()
+                val string=cursorFirst.getLong(cursorFirst.getColumnIndexOrThrow(DataBaseContract.contactID))
+                Log.d("questForAnswer","the column is available in query itself = $string")
+                cursorFirst.close()
                 cursor?.let {
+                    Log.d("questForAnswer","cursor being $$$ prepared from CONTENT RESOLVER")
                     it.setNotificationUri(context?.contentResolver,uri)
                     Log.d("test1","cursor being returned from CONTENT RESOLVER")
                     it
@@ -108,7 +108,7 @@ class ContentProviderForContacts: ContentProvider() {
 
     override fun insert(uri: Uri, contentValues: ContentValues?): Uri? {
 
-        val dataBase=write
+        val dataBase = dataBaseHelper.writableDatabase
         return when(URI_MATCHER.match(uri)){
             TABLE_CONTACT->{
                 val id=dataBase.insert(DataBaseContract.TABLE_CONTACT_NAME,null,contentValues)
@@ -139,7 +139,7 @@ class ContentProviderForContacts: ContentProvider() {
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        val dataBase=write
+        val dataBase = dataBaseHelper.writableDatabase
         return when(URI_MATCHER.match(uri)){
             TABLE_CONTACT->{
                 val count=dataBase.delete(DataBaseContract.TABLE_CONTACT_NAME,selection,selectionArgs)
@@ -170,7 +170,7 @@ class ContentProviderForContacts: ContentProvider() {
     }
 
     override fun update(uri: Uri, contentValues: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
-        val dataBase=write
+        val dataBase = dataBaseHelper.writableDatabase
         return when(URI_MATCHER.match(uri)){
             TABLE_CONTACT->{
                 val count=dataBase.update(DataBaseContract.TABLE_CONTACT_NAME,contentValues,selection,selectionArgs)

@@ -94,77 +94,84 @@ class DataBase(context: Context) : SQLiteOpenHelper(context, contactDataBaseName
         println("Migration: inside on upgrade triggered")
         Log.d("test1","onUpgrade outside if")
         if(oldVersion<2){
-            println("Migration: inside new version 2")
-            Log.d("test1","onUpgrade inside if")
-            database?.execSQL("ALTER TABLE $addressTableName RENAME COLUMN _id TO $contactID")
-            database?.execSQL("CREATE TABLE $tableDummy ($contactID INTEGER primary key autoincrement,$contactName TEXT)")
-            database?.execSQL("CREATE TABLE $tableAddressDummy($addressId INTEGER primary key autoincrement,$contactID INTEGER,$contactAddress TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
-            database?.execSQL("CREATE TABLE $phoneTableName($phoneNumberId INTEGER primary key autoincrement,$contactID INTEGER,$contactPhoneNumber INTEGER,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
-            database?.execSQL("CREATE TABLE $emailTableName($emailId INTEGER primary key autoincrement,$contactID INTEGER,$contactEmail TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
-            val cursor=database?.query(contactTableName,null,null,null,null,null,null)
-            cursor?.use {
-                while (cursor.moveToNext()){
-                    val id = cursor.getString(cursor.getColumnIndexOrThrow("_id"))
-                    val name=if(cursor.getString(cursor.getColumnIndexOrThrow(contactName))!=null) cursor.getString(cursor.getColumnIndexOrThrow(contactName)) else null
-                    val contentValuesForContactTable=ContentValues().apply {
-                        put(contactID,id)
-                        put(contactName,name)
-                    }
-                    database.insert(tableDummy,null,contentValuesForContactTable)
-                    val phoneNumber =
-                        if (cursor.getString(cursor.getColumnIndexOrThrow(contactPhoneNumber)) != null) cursor.getString(
-                            cursor.getColumnIndexOrThrow(
-                                contactPhoneNumber
-                            )
-                        ).split(", ") else null
-                    val email =
-                        if (cursor.getString(cursor.getColumnIndexOrThrow(contactEmail)) != null) cursor.getString(
-                            cursor.getColumnIndexOrThrow(
-                                contactEmail
-                            )
-                        ).split(", ") else null
-                    phoneNumber?.let {
-                        it.forEach {
-                            val contentValues=ContentValues().apply {
-                                put(contactID,id)
-                                put(contactPhoneNumber,it)
-                            }
-                            database.insert(phoneTableName,null,contentValues)
-                        }
-                    }
-                    email?.let {
-                        it.forEach {
-                            val contentValues=ContentValues().apply {
-                                put(contactID,id)
-                                put(contactEmail,it)
-                            }
-                            database.insert(emailTableName,null,contentValues)
-                        }
-                    }
-                    val cursorForAddress = database.query(addressTableName, arrayOf(contactAddress),"$contactID = ?",
-                        arrayOf(id.toString()),null,null,null)
-                    cursorForAddress?.use {
-                        while (cursorForAddress.moveToNext()){
-                            val address=cursorForAddress.getString(cursorForAddress.getColumnIndexOrThrow(
-                                contactAddress))
-                            val contentValues=ContentValues().apply {
-                                put(contactID,id)
-                                put(contactAddress,address)
-                            }
-                            database.insert(tableAddressDummy,null,contentValues)
-                        }
-                    }
-                }
-            }
-            database?.execSQL("DROP TABLE IF EXISTS $contactTableName")
-            database?.execSQL("DROP TABLE IF EXISTS $addressTableName")
-            database?.execSQL("ALTER TABLE $tableAddressDummy RENAME TO $addressTableName")
-            database?.execSQL("ALTER TABLE $tableDummy RENAME TO $contactTableName")
-            Log.d("test1","finish of the migration")
-            println("Migration: inside migration completed")
+            upgradeDataBaseVersion2(database)
         }
 
     }
-
+    private fun upgradeDataBaseVersion2(database:SQLiteDatabase?){
+        println("Migration: inside new version 2")
+        Log.d("test1","onUpgrade inside if")
+        database?.execSQL("ALTER TABLE $addressTableName RENAME COLUMN _id TO $contactID")
+        database?.execSQL("ALTER TABLE $contactTableName RENAME COLUMN _id TO $contactID")
+        database?.execSQL("CREATE TABLE $tableDummy ($contactID INTEGER primary key autoincrement,$contactName TEXT)")
+        database?.execSQL("CREATE TABLE $tableAddressDummy($addressId INTEGER primary key autoincrement,$contactID INTEGER,$contactAddress TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+        database?.execSQL("CREATE TABLE $phoneTableName($phoneNumberId INTEGER primary key autoincrement,$contactID INTEGER,$contactPhoneNumber INTEGER,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+        database?.execSQL("CREATE TABLE $emailTableName($emailId INTEGER primary key autoincrement,$contactID INTEGER,$contactEmail TEXT,FOREIGN KEY($contactID) REFERENCES $contactTableName($contactID))")
+        val cursor=database?.query(contactTableName,null,null,null,null,null,null)
+        cursor?.use {
+            while (cursor.moveToNext()){
+                val id = cursor.getString(cursor.getColumnIndexOrThrow(DataBaseContract.contactID))
+                val name=if(cursor.getString(cursor.getColumnIndexOrThrow(contactName))!=null) cursor.getString(cursor.getColumnIndexOrThrow(contactName)) else null
+                val contentValuesForContactTable=ContentValues().apply {
+                    put(contactID,id)
+                    put(contactName,name)
+                }
+                database.insert(tableDummy,null,contentValuesForContactTable)
+                val phoneNumber =
+                    if (cursor.getString(cursor.getColumnIndexOrThrow(contactPhoneNumber)) != null) cursor.getString(
+                        cursor.getColumnIndexOrThrow(
+                            contactPhoneNumber
+                        )
+                    ).split(", ") else null
+                val email =
+                    if (cursor.getString(cursor.getColumnIndexOrThrow(contactEmail)) != null) cursor.getString(
+                        cursor.getColumnIndexOrThrow(
+                            contactEmail
+                        )
+                    ).split(", ") else null
+                phoneNumber?.let {
+                    it.forEach {
+                        val contentValues=ContentValues().apply {
+                            put(contactID,id)
+                            put(contactPhoneNumber,it)
+                        }
+                        database.insert(phoneTableName,null,contentValues)
+                    }
+                }
+                email?.let {
+                    it.forEach {
+                        val contentValues=ContentValues().apply {
+                            put(contactID,id)
+                            put(contactEmail,it)
+                        }
+                        database.insert(emailTableName,null,contentValues)
+                    }
+                }
+                val cursorForAddress = database.query(addressTableName, arrayOf(contactAddress),"$contactID = ?",
+                    arrayOf(id.toString()),null,null,null)
+                cursorForAddress?.use {
+                    while (cursorForAddress.moveToNext()){
+                        val address=cursorForAddress.getString(cursorForAddress.getColumnIndexOrThrow(
+                            contactAddress))
+                        val contentValues=ContentValues().apply {
+                            put(contactID,id)
+                            put(contactAddress,address)
+                        }
+                        database.insert(tableAddressDummy,null,contentValues)
+                    }
+                }
+            }
+        }
+        database?.execSQL("DROP TABLE $contactTableName")
+        database?.execSQL("DROP TABLE $addressTableName")
+        database?.execSQL("ALTER TABLE $tableAddressDummy RENAME TO $addressTableName")
+        database?.execSQL("ALTER TABLE $tableDummy RENAME TO $contactTableName")
+        val contentValuesForDummy=ContentValues().apply {
+            put(contactName,"Dummy")
+        }
+        database?.insert(contactTableName,null,contentValuesForDummy)
+        Log.d("test1","finish of the migration")
+        println("Migration: inside migration completed")
+    }
 
 }
