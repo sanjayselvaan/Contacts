@@ -90,17 +90,14 @@ class DataBase(context: Context) : SQLiteOpenHelper(context, contactDataBaseName
     }
 
     override fun onUpgrade(database: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        Log.d("test1","the thread in on upgrade is : ${Thread.currentThread().name}")
-        println("Migration: inside on upgrade triggered")
-        Log.d("test1","onUpgrade outside if")
+        Log.d("test1","Migration: inside on upgrade triggered")
         if(oldVersion<2){
             upgradeDataBaseVersion2(database)
         }
 
     }
     private fun upgradeDataBaseVersion2(database:SQLiteDatabase?){
-        println("Migration: inside new version 2")
-        Log.d("test1","onUpgrade inside if")
+        Log.d("test1","inside onUpgradeDataBaseVersion2 ")
         database?.execSQL("ALTER TABLE $addressTableName RENAME COLUMN _id TO $contactID")
         database?.execSQL("ALTER TABLE $contactTableName RENAME COLUMN _id TO $contactID")
         database?.execSQL("CREATE TABLE $tableDummy ($contactID INTEGER primary key autoincrement,$contactName TEXT)")
@@ -171,7 +168,6 @@ class DataBase(context: Context) : SQLiteOpenHelper(context, contactDataBaseName
         }
         database?.insert(contactTableName,null,contentValuesForDummy)
         Log.d("test1","finish of the migration")
-        println("Migration: inside migration completed")
     }
 
 }

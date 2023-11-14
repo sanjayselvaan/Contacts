@@ -2,7 +2,6 @@ package com.example.contacts
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -48,7 +47,6 @@ class ShowContactDetails : AppCompatActivity() {
         }
         alertDialog.setTitle(R.string.delete)
         alertDialog.setMessage(R.string.delete_contact_alert_message)
-
         backPressed = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finish()
@@ -65,9 +63,7 @@ class ShowContactDetails : AppCompatActivity() {
         }
     }
 
-
     private fun setUpViewForContactDetails(contactItem: Contact) {
-        Log.d("test1","set up view is running on this thread called = ${Thread.currentThread().name}")
         val contactName = contactItem.contactName
         val contactNumber = contactItem.contactPhoneNumber
         val contactEmail = contactItem.contactEmail
@@ -127,7 +123,6 @@ class ShowContactDetails : AppCompatActivity() {
                 backPressed.handleOnBackPressed()
                 return true
             }
-
             R.id.action_delete -> {
                 alertDialog.show()
                 deleteAlertVisibility = true
@@ -147,7 +142,7 @@ class ShowContactDetails : AppCompatActivity() {
         outState.putBoolean(deleteAlertKey, deleteAlertVisibility)
     }
 
-    companion object {
+    companion object{
         private const val deleteAlertKey = "delete_alert_key"
     }
 }

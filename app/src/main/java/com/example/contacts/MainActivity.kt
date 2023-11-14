@@ -3,7 +3,6 @@ package com.example.contacts
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
     private val fetchResultFromAddContactActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                lifecycleScope.launch { notifyRecyclerAdapter() }
+                notifyRecyclerAdapter()
             }
         }
 
@@ -36,9 +35,7 @@ class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
         dataBaseHelper = DataBaseHelper(contentResolver)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = ContactsListRecyclerViewAdapter(this)
-
         lifecycleScope.launch{
-            Log.d("threadName","Thread name in main activity is ${Thread.currentThread().name}")
             val contactList = dataBaseHelper.getContactsList()
             (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(contactList)
         }
@@ -51,9 +48,10 @@ class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
         if (savedInstanceState != null) {
             searchQueryDuplicate = savedInstanceState.getString(searchQueryKey)
         }
+
     }
 
-    private suspend fun notifyRecyclerAdapter() {
+    private fun notifyRecyclerAdapter() {
         lifecycleScope.launch {
             val contactList = dataBaseHelper.getContactsList()
             (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(contactList)
@@ -84,19 +82,19 @@ class MainActivity : AppCompatActivity(), RecyclerItemClickListener {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText?.let { query ->
-                    if (query.isNotEmpty()) {
+                    searchQuery = if (query.isNotEmpty()) {
                         lifecycleScope.launch {
                             val filterList = dataBaseHelper.searchContact(query)
                             (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(filterList)
                         }
-                        searchQuery = query
+                        query
 
                     } else {
                         lifecycleScope.launch {
                             val list = dataBaseHelper.getContactsList()
                             (binding.recyclerView.adapter as ContactsListRecyclerViewAdapter).setDataList(list)
                         }
-                        searchQuery = query
+                        query
                     }
                 }
                 return true

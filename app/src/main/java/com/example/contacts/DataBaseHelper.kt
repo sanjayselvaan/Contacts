@@ -12,10 +12,8 @@ class DataBaseHelper(private val contentResolver: ContentResolver){
     suspend fun getContactsList():List<Contact> = withContext(Dispatchers.IO){
         val contactList= mutableListOf<Contact>()
         val cursor=contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,null,null,null,null)
-        Log.d("test1","line after assignment statement")
         cursor?.use {cursor1->
             while (cursor1.moveToNext()){
-                Log.d("test1","line before crash")
                 val id=cursor1.getLong(cursor1.getColumnIndexOrThrow(DataBaseContract.contactID))
                 val name=cursor1.getString(cursor1.getColumnIndexOrThrow(DataBaseContract.contactName))
                 val phone=cursor1.getString(cursor1.getColumnIndexOrThrow(DataBaseContract.contactPhoneNumber))
@@ -92,10 +90,10 @@ class DataBaseHelper(private val contentResolver: ContentResolver){
 
      suspend fun getContact(id:Long):Contact?= withContext(Dispatchers.IO){
              val cursorForContactTable=contentResolver.query(DataBaseContract.CONTENT_URI_FOR_TABLE_CONTACT,null,"${DataBaseContract.contactID}= ?", arrayOf(id.toString()),null)
-         cursorForContactTable?.use {
+         cursorForContactTable?.use { cursor ->
              cursorForContactTable.moveToFirst()
              val name=cursorForContactTable.getString(cursorForContactTable.getColumnIndexOrThrow(DataBaseContract.contactName))?:null
-             val columnNames=it.columnNames
+             val columnNames=cursor.columnNames
              columnNames.forEach {columnName->
                  Log.d("questForAnswer","getContact cursor column names = $columnName")
              }
