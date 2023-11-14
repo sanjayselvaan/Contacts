@@ -16,12 +16,12 @@ class DataBaseHelper(private val contentResolver: ContentResolver){
             while (cursor1.moveToNext()){
                 val id=cursor1.getLong(cursor1.getColumnIndexOrThrow(DataBaseContract.contactID))
                 val name=cursor1.getString(cursor1.getColumnIndexOrThrow(DataBaseContract.contactName))
-                val phone=cursor1.getString(cursor1.getColumnIndexOrThrow(DataBaseContract.contactPhoneNumber))
-                Log.d("questForAnswer","in getContactList id=$id")
-                Log.d("questForAnswer","in getContactList name=$name")
-                Log.d("questForAnswer","in getContactList phone=$phone")
-                val emailTrial=cursor1.getString(cursor1.getColumnIndexOrThrow(DataBaseContract.contactEmail))
-                Log.d("questForAnswer","in getContactList email=$emailTrial")
+//                val phone=cursor1.getString(cursor1.getColumnIndexOrThrow(DataBaseContract.contactPhoneNumber))
+//                Log.d("questForAnswer","in getContactList id=$id")
+//                Log.d("questForAnswer","in getContactList name=$name")
+//                Log.d("questForAnswer","in getContactList phone=$phone")
+//                val emailTrial=cursor1.getString(cursor1.getColumnIndexOrThrow(DataBaseContract.contactEmail))
+//                Log.d("questForAnswer","in getContactList email=$emailTrial")
                 val columnNames=cursor1.columnNames
                 columnNames.forEach {
                     Log.d("questForAnswer","getContactList cursor column names = $it")
